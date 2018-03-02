@@ -1,5 +1,6 @@
 
-var vscode = require( 'vscode' );
+var vscode = require( 'vscode' ),
+    path = require( 'path' );
 
 function activate( context )
 {
@@ -102,7 +103,7 @@ function activate( context )
 
     function trim( text )
     {
-        return text.replace( /\s+$/, '' );
+        return text.replace( /^\s+|\s+$/g, '' );
     };
 
     function maxLength( texts, partIndex )
@@ -124,7 +125,7 @@ function activate( context )
                 editBuilder.replace( line.range, linesNew[ lineIndex ] );
                 lineIndex++;
             } );
-        } )
+        }, { undoStopAfter: false, undoStopBefore: false } )
     }
 
     function alignCSV( textEditor, ranges )
@@ -133,9 +134,9 @@ function activate( context )
         var linesParts = lines.map( line => line.text.split( ',' ) );
         linesParts = linesParts.map( function( line )
         {
-            return line.map( function( part )
+            return line.map( function( part, index )
             {
-                return trim( part );
+                return ( index === 0 ? "" : " " ) + trim( part );
             } );
         } );
         const newLineTexts = []
@@ -196,8 +197,12 @@ function activate( context )
 
     function go()
     {
-        align();
-        setTimeout( decorate, 200 );
+        const editor = vscode.window.activeTextEditor;
+        if( editor && path.extname( editor.document.fileName ) === ".csv" )
+        {
+            align();
+            setTimeout( decorate, 200 );
+        }
     }
 
     context.subscriptions.push( vscode.commands.registerCommand( 'csv-align-mode.format', function()
