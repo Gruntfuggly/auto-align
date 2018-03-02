@@ -21,6 +21,14 @@
             {
                 "command": "csv-align-mode.format",
                 "title": "Align CSV"
+            },
+            {
+                "command": "csv-align-mode.enable",
+                "title": "Enable Align CSV mode"
+            },
+            {
+                "command": "csv-align-mode.disable",
+                "title": "Disable Align CSV mode"
             }
         ]
     },

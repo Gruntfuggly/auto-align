@@ -3,6 +3,8 @@ var vscode = require( 'vscode' );
 
 function activate( context )
 {
+    var enabled = false;
+
     function collectLines( document, startLine, endLine )
     {
         const lines = [];
@@ -130,11 +132,11 @@ function activate( context )
     {
         const lines = linesFromRangesExpandBlockIfEmpty( textEditor, ranges );
         var linesParts = lines.map( line => line.text.split( ',' ) );
-        linesParts.map( function( line )
+        linesParts = linesParts.map( function( line )
         {
-            line.map( function( part )
+            return line.map( function( part )
             {
-                part = trim( part );
+                return trim( part );
             } );
         } );
         const newLineTexts = []
@@ -150,22 +152,53 @@ function activate( context )
         replaceLinesWithText( textEditor, lines, newLineTexts );
     }
 
+    const decorationType = vscode.window.createTextEditorDecorationType( {
+        light: { color: "#888888" },
+        dark: { color: "#888888" }
+    } );
+
     function go()
     {
-        const textEditor = vscode.window.activeTextEditor;
-        const selections = textEditor.selections;
-        alignCSV( textEditor, selections );
+        var highlights = [];
+
+        if( enabled )
+        {
+            const editor = vscode.window.activeTextEditor;
+            const selections = editor.selections;
+            alignCSV( editor, selections );
+
+            var pattern = new RegExp( ",", 'g' );
+            const text = editor.document.getText();
+            let match;
+            while( match = pattern.exec( text ) )
+            {
+                const startPos = editor.document.positionAt( match.index );
+                const endPos = editor.document.positionAt( match.index + match[ 0 ].length );
+                const decoration = { range: new vscode.Range( startPos, endPos ) };
+                highlights.push( decoration );
+            }
+        }
+
+        editor.setDecorations( decorationType, highlights );
     }
 
-    var disposable = vscode.commands.registerCommand( 'csv-align-mode.format', function()
+    context.subscriptions.push( vscode.commands.registerCommand( 'csv-align-mode.format', function()
     {
         go();
-    } );
+    } ) );
+
+    context.subscriptions.push( vscode.commands.registerCommand( 'csv-align-mode.enable', function()
+    {
+        enabled = true;
+    } ) );
+
+    context.subscriptions.push( vscode.commands.registerCommand( 'csv-align-mode.disable', function()
+    {
+        enabled = false;
+    } ) );
 
     vscode.window.onDidChangeTextEditorSelection( ( e ) => { go( e ); } );
     vscode.window.onDidChangeActiveTextEditor( ( e ) => { go( e ); } );
-
-    context.subscriptions.push( disposable );
 }
 exports.activate = activate;
 
