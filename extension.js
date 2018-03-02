@@ -90,15 +90,14 @@ function activate( context )
     {
         for( let linePartIndex = 0; linePartIndex < lines.length; linePartIndex++ )
         {
-            lines[ linePartIndex ] = lines[ linePartIndex ] + delimeter
-
+            lines[ linePartIndex ] = lines[ linePartIndex ] + delimeter;
         }
     }
 
     function padRight( text, count )
     {
-        const padAmount = count - text.length;
-        return text + ' '.repeat( padAmount );
+        const padAmount = text ? ( count - text.length ) : count;
+        return ( text ? text : "" ) + ' '.repeat( padAmount );
     }
 
     function trim( text )
@@ -109,7 +108,7 @@ function activate( context )
     function maxLength( texts, partIndex )
     {
         let max = 0;
-        return texts.map( text => text[ partIndex ].length ).reduce( ( prev, curr ) =>
+        return texts.map( text => ( text[ partIndex ] ? text[ partIndex ].length : 0 ) ).reduce( ( prev, curr ) =>
         {
             return curr >= prev ? curr : prev;
         } )
@@ -153,22 +152,21 @@ function activate( context )
     }
 
     const decorationType = vscode.window.createTextEditorDecorationType( {
-        light: { color: "#888888" },
-        dark: { color: "#888888" }
+        light: { color: "#cccccc" },
+        dark: { color: "#444444" }
     } );
 
-    function go()
+    function decorate()
     {
         var highlights = [];
 
+        const editor = vscode.window.activeTextEditor;
+
         if( enabled )
         {
-            const editor = vscode.window.activeTextEditor;
-            const selections = editor.selections;
-            alignCSV( editor, selections );
+            const text = editor.document.getText();
 
             var pattern = new RegExp( ",", 'g' );
-            const text = editor.document.getText();
             let match;
             while( match = pattern.exec( text ) )
             {
@@ -182,19 +180,41 @@ function activate( context )
         editor.setDecorations( decorationType, highlights );
     }
 
+    function align()
+    {
+        const editor = vscode.window.activeTextEditor;
+
+        if( enabled )
+        {
+            const text = editor.document.getText();
+
+            const selections = [];
+            selections.push( new vscode.Range( editor.document.positionAt( 0 ), editor.document.positionAt( text.length - 1 ) ) );
+            alignCSV( editor, selections );
+        }
+    }
+
+    function go()
+    {
+        align();
+        setTimeout( decorate, 200 );
+    }
+
     context.subscriptions.push( vscode.commands.registerCommand( 'csv-align-mode.format', function()
     {
-        go();
+        align();
     } ) );
 
     context.subscriptions.push( vscode.commands.registerCommand( 'csv-align-mode.enable', function()
     {
         enabled = true;
+        go();
     } ) );
 
     context.subscriptions.push( vscode.commands.registerCommand( 'csv-align-mode.disable', function()
     {
         enabled = false;
+        setTimeout( decorate, 200 );
     } ) );
 
     vscode.window.onDidChangeTextEditorSelection( ( e ) => { go( e ); } );
