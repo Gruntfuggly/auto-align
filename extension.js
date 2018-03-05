@@ -6,6 +6,9 @@ function activate( context )
 {
     var enabled = false;
 
+
+    String.prototype.rtrim = function() { return this.replace( /\s+$/, '' ); };
+
     function collectLines( document, startLine, endLine )
     {
         const lines = [];
@@ -183,15 +186,49 @@ function activate( context )
 
     function align()
     {
-        const editor = vscode.window.activeTextEditor;
-
         if( enabled )
         {
-            const text = editor.document.getText();
+            const editor = vscode.window.activeTextEditor;
 
-            const selections = [];
-            selections.push( new vscode.Range( editor.document.positionAt( 0 ), editor.document.positionAt( text.length - 1 ) ) );
-            alignCSV( editor, selections );
+            if( editor )
+            {
+                const text = editor.document.getText();
+
+                const selections = [];
+                selections.push( new vscode.Range( editor.document.positionAt( 0 ), editor.document.positionAt( text.length - 1 ) ) );
+                alignCSV( editor, selections );
+            }
+        }
+    }
+
+    function positionCursor()
+    {
+        if( enabled )
+        {
+            const editor = vscode.window.activeTextEditor;
+
+            if( editor )
+            {
+                const text = editor.document.getText();
+
+                var selection = editor.selection;
+                var cursorPos = editor.document.offsetAt( selection.start );
+                var currentWordRange = editor.document.getWordRangeAtPosition( selection.active, /[^,](.*?)[,$]/g );
+                if( currentWordRange === undefined )
+                {
+                    currentWordRange = new vscode.Range( cursorPos, new vscode.Position( selection.end.line + 1 ) );
+                }    
+                var currentWord = text.substring( editor.document.offsetAt( currentWordRange.start ) + 1, editor.document.offsetAt( currentWordRange.end ) - 1 );
+                var currentWordStart = editor.document.offsetAt( currentWordRange.start ) + 1;
+                var currentWordEnd = currentWordStart + currentWord.rtrim().length + 1;
+                console.log( "cp:" + cursorPos + " cwe:" + currentWordEnd + " cw:" + currentWord );
+                if( cursorPos > currentWordEnd )
+                {
+                    var position = editor.document.positionAt( currentWordEnd );
+                    editor.selection = new vscode.Selection( position, position );
+                    editor.revealRange( editor.selection, vscode.TextEditorRevealType.Default );
+                }
+            }
         }
     }
 
@@ -201,6 +238,7 @@ function activate( context )
         if( editor && path.extname( editor.document.fileName ) === ".csv" )
         {
             align();
+            positionCursor();
             setTimeout( decorate, 200 );
         }
     }
