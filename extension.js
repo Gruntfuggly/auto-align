@@ -240,12 +240,18 @@ function activate( context )
         const editor = vscode.window.activeTextEditor;
         if( editor && path.extname( editor.document.fileName ) === ".csv" )
         {
+            var delay = 1000;
+            if( e.kind && e.kind == vscode.TextEditorSelectionChangeKind.Mouse )
+            {
+                delay = 0;
+            }
+
             formatTimeout = setTimeout( function()
             {
                 align();
                 positionCursor();
-                setTimeout( decorate, 200 );
-            }, 1000 );
+                setTimeout( decorate, 100 );
+            }, delay );
         }
     }
 
@@ -267,7 +273,7 @@ function activate( context )
     {
         enabled = false;
         setButton();
-        setTimeout( decorate, 200 );
+        setTimeout( decorate, 100 );
     }
 
     context.subscriptions.push( vscode.commands.registerCommand( 'csv-align-mode.format', align ) );
