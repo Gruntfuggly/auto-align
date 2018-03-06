@@ -8,6 +8,8 @@ function activate( context )
 
     var button = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Left, 0 );
 
+    var formatTimeout;
+
     String.prototype.rtrim = function() { return this.replace( /\s+$/, '' ); };
 
     function collectLines( document, startLine, endLine )
@@ -214,15 +216,14 @@ function activate( context )
 
                 var selection = editor.selection;
                 var cursorPos = editor.document.offsetAt( selection.start );
-                var currentWordRange = editor.document.getWordRangeAtPosition( selection.active, /[^,](.*?)[,$]/g );
+                var currentWordRange = editor.document.getWordRangeAtPosition( selection.active, /(^.*?,|,.*?$)/ );
                 if( currentWordRange === undefined )
                 {
-                    currentWordRange = new vscode.Range( cursorPos, new vscode.Position( selection.end.line + 1 ) );
-                }    
+                    currentWordRange = editor.document.getWordRangeAtPosition( selection.active, /,.*?,/ );
+                }
                 var currentWord = text.substring( editor.document.offsetAt( currentWordRange.start ) + 1, editor.document.offsetAt( currentWordRange.end ) - 1 );
                 var currentWordStart = editor.document.offsetAt( currentWordRange.start ) + 1;
                 var currentWordEnd = currentWordStart + currentWord.rtrim().length + 1;
-                console.log( "cp:" + cursorPos + " cwe:" + currentWordEnd + " cw:" + currentWord );
                 if( cursorPos > currentWordEnd )
                 {
                     var position = editor.document.positionAt( currentWordEnd );
@@ -233,14 +234,18 @@ function activate( context )
         }
     }
 
-    function go()
+    function go( e )
     {
+        clearTimeout( formatTimeout );
         const editor = vscode.window.activeTextEditor;
         if( editor && path.extname( editor.document.fileName ) === ".csv" )
         {
-            align();
-            positionCursor();
-            setTimeout( decorate, 200 );
+            formatTimeout = setTimeout( function()
+            {
+                align();
+                positionCursor();
+                setTimeout( decorate, 200 );
+            }, 1000 );
         }
     }
 
