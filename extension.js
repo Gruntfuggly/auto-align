@@ -6,6 +6,7 @@ function activate( context )
 {
     var enabled = false;
 
+    var button = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Left, 0 );
 
     String.prototype.rtrim = function() { return this.replace( /\s+$/, '' ); };
 
@@ -243,25 +244,35 @@ function activate( context )
         }
     }
 
-    context.subscriptions.push( vscode.commands.registerCommand( 'csv-align-mode.format', function()
+    function setButton()
     {
-        align();
-    } ) );
+        button.text = "Auto Align: $(thumbs" + ( enabled ? "up" : "down" ) + ")";
+        button.command = 'csv-align-mode.' + ( enabled ? 'disable' : 'enable' );
+        button.show();
+    }
 
-    context.subscriptions.push( vscode.commands.registerCommand( 'csv-align-mode.enable', function()
+    function enable()
     {
         enabled = true;
+        setButton();
         go();
-    } ) );
+    }
 
-    context.subscriptions.push( vscode.commands.registerCommand( 'csv-align-mode.disable', function()
+    function disable()
     {
         enabled = false;
+        setButton();
         setTimeout( decorate, 200 );
-    } ) );
+    }
 
-    vscode.window.onDidChangeTextEditorSelection( ( e ) => { go( e ); } );
-    vscode.window.onDidChangeActiveTextEditor( ( e ) => { go( e ); } );
+    context.subscriptions.push( vscode.commands.registerCommand( 'csv-align-mode.format', align ) );
+    context.subscriptions.push( vscode.commands.registerCommand( 'csv-align-mode.enable', enable ) );
+    context.subscriptions.push( vscode.commands.registerCommand( 'csv-align-mode.disable', disable ) );
+
+    vscode.window.onDidChangeTextEditorSelection( go );
+    vscode.window.onDidChangeActiveTextEditor( go );
+
+    enable();
 }
 exports.activate = activate;
 
