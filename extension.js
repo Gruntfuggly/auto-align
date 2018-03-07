@@ -9,9 +9,7 @@ const innerField = new RegExp( "\\" + separator + ".*?\\" + separator );
 
 function activate( context )
 {
-    console.log( JSON.stringify( innerField ) );
-
-    var enabled = false;
+    var enabled = true;
 
     var button = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Left, 0 );
 
@@ -225,10 +223,21 @@ function activate( context )
     context.subscriptions.push( vscode.commands.registerCommand( 'csv-align-mode.disable', disable ) );
 
     vscode.window.onDidChangeTextEditorSelection( go );
-    vscode.window.onDidChangeActiveTextEditor( go );
-
-    enable();
+    vscode.window.onDidChangeActiveTextEditor( function( e )
+    {
+        setButton();
+        if( e && e.document && path.extname( e.document.fileName ) === ".csv" )
+        {
+            button.show();
+            go();
+        }
+        else
+        {
+            button.hide();
+        }
+    } );
 }
+
 exports.activate = activate;
 
 function deactivate()
