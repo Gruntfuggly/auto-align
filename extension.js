@@ -189,47 +189,41 @@ function activate( context )
 
     function align()
     {
-        if( enabled )
+        const editor = vscode.window.activeTextEditor;
+
+        if( editor )
         {
-            const editor = vscode.window.activeTextEditor;
+            const text = editor.document.getText();
 
-            if( editor )
-            {
-                const text = editor.document.getText();
-
-                const selections = [];
-                selections.push( new vscode.Range( editor.document.positionAt( 0 ), editor.document.positionAt( text.length - 1 ) ) );
-                alignCSV( editor, selections );
-            }
+            const selections = [];
+            selections.push( new vscode.Range( editor.document.positionAt( 0 ), editor.document.positionAt( text.length - 1 ) ) );
+            alignCSV( editor, selections );
         }
     }
 
     function positionCursor()
     {
-        if( enabled )
+        const editor = vscode.window.activeTextEditor;
+
+        if( editor )
         {
-            const editor = vscode.window.activeTextEditor;
+            const text = editor.document.getText();
 
-            if( editor )
+            var selection = editor.selection;
+            var cursorPos = editor.document.offsetAt( selection.start );
+            var currentWordRange = editor.document.getWordRangeAtPosition( selection.active, /(^.*?,|,.*?$)/ );
+            if( currentWordRange === undefined )
             {
-                const text = editor.document.getText();
-
-                var selection = editor.selection;
-                var cursorPos = editor.document.offsetAt( selection.start );
-                var currentWordRange = editor.document.getWordRangeAtPosition( selection.active, /(^.*?,|,.*?$)/ );
-                if( currentWordRange === undefined )
-                {
-                    currentWordRange = editor.document.getWordRangeAtPosition( selection.active, /,.*?,/ );
-                }
-                var currentWord = text.substring( editor.document.offsetAt( currentWordRange.start ) + 1, editor.document.offsetAt( currentWordRange.end ) - 1 );
-                var currentWordStart = editor.document.offsetAt( currentWordRange.start ) + 1;
-                var currentWordEnd = currentWordStart + currentWord.rtrim().length + 1;
-                if( cursorPos > currentWordEnd )
-                {
-                    var position = editor.document.positionAt( currentWordEnd );
-                    editor.selection = new vscode.Selection( position, position );
-                    editor.revealRange( editor.selection, vscode.TextEditorRevealType.Default );
-                }
+                currentWordRange = editor.document.getWordRangeAtPosition( selection.active, /,.*?,/ );
+            }
+            var currentWord = text.substring( editor.document.offsetAt( currentWordRange.start ) + 1, editor.document.offsetAt( currentWordRange.end ) - 1 );
+            var currentWordStart = editor.document.offsetAt( currentWordRange.start ) + 1;
+            var currentWordEnd = currentWordStart + currentWord.rtrim().length + 1;
+            if( cursorPos > currentWordEnd )
+            {
+                var position = editor.document.positionAt( currentWordEnd );
+                editor.selection = new vscode.Selection( position, position );
+                editor.revealRange( editor.selection, vscode.TextEditorRevealType.Default );
             }
         }
     }
@@ -237,21 +231,24 @@ function activate( context )
     function go( e )
     {
         clearTimeout( formatTimeout );
-        const editor = vscode.window.activeTextEditor;
-        if( editor && path.extname( editor.document.fileName ) === ".csv" )
+        if( enabled )
         {
-            var delay = 1000;
-            if( e.kind && e.kind == vscode.TextEditorSelectionChangeKind.Mouse )
+            const editor = vscode.window.activeTextEditor;
+            if( editor && path.extname( editor.document.fileName ) === ".csv" )
             {
-                delay = 0;
-            }
+                var delay = 1000;
+                if( e && e.kind && e.kind == vscode.TextEditorSelectionChangeKind.Mouse )
+                {
+                    delay = 0;
+                }
 
-            formatTimeout = setTimeout( function()
-            {
-                align();
-                positionCursor();
-                setTimeout( decorate, 100 );
-            }, delay );
+                formatTimeout = setTimeout( function()
+                {
+                    align();
+                    positionCursor();
+                    setTimeout( decorate, 100 );
+                }, delay );
+            }
         }
     }
 
