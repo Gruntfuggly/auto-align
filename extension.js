@@ -2,8 +2,15 @@
 var vscode = require( 'vscode' ),
     path = require( 'path' );
 
+const separator = "|";
+
+const startEndField = new RegExp( "(^.*?\\" + separator + "|\\" + separator + ".*? $)" );
+const innerField = new RegExp( "\\" + separator + ".*?\\" + separator );
+
 function activate( context )
 {
+    console.log( JSON.stringify( innerField ) );
+
     var enabled = false;
 
     var button = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Left, 0 );
@@ -11,76 +18,6 @@ function activate( context )
     var formatTimeout;
 
     String.prototype.rtrim = function() { return this.replace( /\s+$/, '' ); };
-
-    function collectLines( document, startLine, endLine )
-    {
-        const lines = [];
-        for( let index = startLine; index <= endLine; index++ )
-        {
-            lines.push( document.lineAt( index ) );
-        }
-        return lines;
-    }
-
-    function linesFromRange( document, range )
-    {
-        const startLine = range.start.line;
-        const endLine = range.end.line;
-
-        return collectLines( document, startLine, endLine );
-    }
-
-    function linesFromRanges( document, ranges )
-    {
-        return ranges.map( range => linesFromRange( document, range ) ).reduce( ( acc, cur ) => acc.concat( cur ) );
-    }
-
-    function findLastLineOfBlock( document, lineNumber, isInBlock )
-    {
-        const line = document.lineAt( lineNumber );
-        let previousLine = line;
-        const documentLength = document.lineCount;
-        for( let index = lineNumber + 1; index < documentLength; index++ )
-        {
-            const nextLine = document.lineAt( index );
-            if( !isInBlock( nextLine ) ) break;
-            previousLine = nextLine;
-        }
-        return previousLine;
-    }
-
-    function findFirstLineOfBlock( document, lineNumber, isInBlock )
-    {
-        const line = document.lineAt( lineNumber );
-        let previousLine = line;
-        for( let index = lineNumber - 1; index >= 0; index-- )
-        {
-            const nextLine = document.lineAt( index );
-            if( !isInBlock( nextLine ) ) break;
-            previousLine = nextLine;
-        }
-        return previousLine;
-    }
-
-    function expandRangeToBlockIfEmpty( textEditor, range )
-    {
-        if( range.isSingleLine && range.start.character === range.end.character )
-        {
-            const firstLineOfBlock = findFirstLineOfBlock( textEditor.document, range.start.line, line => !line.isEmptyOrWhitespace );
-            const lastLineOfBlock = findLastLineOfBlock( textEditor.document, range.start.line, line => !line.isEmptyOrWhitespace );
-            return new vscode.Range( new vscode.Position( firstLineOfBlock.lineNumber, 0 ), new vscode.Position( lastLineOfBlock.lineNumber, lastLineOfBlock.range.end.character ) );
-        }
-        return range;
-    }
-
-    function linesFromRangesExpandBlockIfEmpty( textEditor, ranges )
-    {
-        if( ranges.length === 1 )
-        {
-            ranges[ 0 ] = expandRangeToBlockIfEmpty( textEditor, ranges[ 0 ] );
-        }
-        return linesFromRanges( textEditor.document, ranges );
-    }
 
     function appendColumn( lines, linesParts, max )
     {
@@ -136,8 +73,18 @@ function activate( context )
 
     function alignCSV( textEditor, ranges )
     {
-        const lines = linesFromRangesExpandBlockIfEmpty( textEditor, ranges );
-        var linesParts = lines.map( line => line.text.split( ',' ) );
+        const document = textEditor.document;
+        const text = document.getText();
+        var firstLine = document.positionAt( text.indexOf( separator ) );
+        var lastLine = document.positionAt( text.lastIndexOf( separator ) );
+
+        const lines = [];
+        for( let index = firstLine.line; index <= lastLine.line; index++ )
+        {
+            lines.push( document.lineAt( index ) );
+        }
+
+        var linesParts = lines.map( line => line.text.split( separator ) );
         linesParts = linesParts.map( function( line )
         {
             return line.map( function( part, index )
@@ -152,7 +99,7 @@ function activate( context )
             const max = maxLength( linesParts, 0 );
             appendColumn( newLineTexts, linesParts, max );
             if( columnIndex != linePartCount - 1 )
-                appendDelimeter( newLineTexts, ',' );
+                appendDelimeter( newLineTexts, separator );
         }
 
         replaceLinesWithText( textEditor, lines, newLineTexts );
@@ -173,7 +120,7 @@ function activate( context )
         {
             const text = editor.document.getText();
 
-            var pattern = new RegExp( ",", 'g' );
+            var pattern = new RegExp( "\\" + separator, 'g' );
             let match;
             while( match = pattern.exec( text ) )
             {
@@ -211,10 +158,10 @@ function activate( context )
 
             var selection = editor.selection;
             var cursorPos = editor.document.offsetAt( selection.start );
-            var currentWordRange = editor.document.getWordRangeAtPosition( selection.active, /(^.*?,|,.*?$)/ );
+            var currentWordRange = editor.document.getWordRangeAtPosition( selection.active, startEndField );
             if( currentWordRange === undefined )
             {
-                currentWordRange = editor.document.getWordRangeAtPosition( selection.active, /,.*?,/ );
+                currentWordRange = editor.document.getWordRangeAtPosition( selection.active, innerField );
             }
             var currentWord = text.substring( editor.document.offsetAt( currentWordRange.start ) + 1, editor.document.offsetAt( currentWordRange.end ) - 1 );
             var currentWordStart = editor.document.offsetAt( currentWordRange.start ) + 1;
