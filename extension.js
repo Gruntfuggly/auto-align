@@ -182,7 +182,7 @@ function activate( context )
             if( editor && path.extname( editor.document.fileName ) === ".csv" )
             {
                 var delay = 1000;
-                if( e && e.kind && e.kind == vscode.TextEditorSelectionChangeKind.Mouse )
+                if( e && ( e.kind && e.kind == vscode.TextEditorSelectionChangeKind.Mouse ) || e.decorateNow === true )
                 {
                     delay = 0;
                 }
@@ -208,7 +208,7 @@ function activate( context )
     {
         enabled = true;
         setButton();
-        go();
+        go( { decorateNow: true } );
     }
 
     function disable()
