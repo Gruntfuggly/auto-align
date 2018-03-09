@@ -189,7 +189,10 @@ function activate( context )
 
                 formatTimeout = setTimeout( function()
                 {
-                    align();
+                    if( e.kind === undefined || e.kind == vscode.TextEditorSelectionChangeKind.Keyboard )
+                    {
+                        align();
+                    }
                     positionCursor();
                     setTimeout( decorate, 100 );
                 }, delay );
