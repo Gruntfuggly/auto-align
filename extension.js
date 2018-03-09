@@ -197,11 +197,18 @@ function activate( context )
         }
     }
 
-    function setButton()
+    function setButton( filename )
     {
         button.text = "Auto Align: $(thumbs" + ( enabled ? "up" : "down" ) + ")";
         button.command = 'csv-align-mode.' + ( enabled ? 'disable' : 'enable' );
-        button.show();
+        if( path.extname( filename ) === ".csv" )
+        {
+            button.show();
+        }
+        else
+        {
+            button.hide();
+        }
     }
 
     function enable()
@@ -225,17 +232,19 @@ function activate( context )
     vscode.window.onDidChangeTextEditorSelection( go );
     vscode.window.onDidChangeActiveTextEditor( function( e )
     {
-        setButton();
-        if( e && e.document && path.extname( e.document.fileName ) === ".csv" )
+        if( e && e.document )
         {
-            button.show();
+            setButton( e.document.fileName );
             go();
         }
-        else
-        {
-            button.hide();
-        }
     } );
+
+    const editor = vscode.window.activeTextEditor;
+    if( editor && editor.document )
+    {
+        setButton( editor.document.fileName );
+        go();
+    }
 }
 
 exports.activate = activate;
