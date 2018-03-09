@@ -1,11 +1,11 @@
 {
-    "name": "csv-align-mode",
-    "displayName": "CSV align mode",
-    "description": "Keep CSV data aligned",
+    "name": "align-mode",
+    "displayName": "Auto Align",
+    "description": "Automatically align by commas, vertical bars, etc.",
     "icon": "icon.png",
     "version": "0.0.1",
     "publisher": "Gruntfuggly",
-    "repository": "https://github.com/Gruntfuggly/csv-align-mode",
+    "repository": "https://github.com/Gruntfuggly/auto-align",
     "engines": {
         "vscode": "^1.5.0"
     },
@@ -19,18 +19,33 @@
     "contributes": {
         "commands": [
             {
-                "command": "csv-align-mode.format",
-                "title": "Align CSV"
+                "command": "auto-align.format",
+                "title": "Auto Align: Align"
             },
             {
-                "command": "csv-align-mode.enable",
-                "title": "Enable Align CSV mode"
+                "command": "auto-align.enable",
+                "title": "Auto Align: Enable auto align mode"
             },
             {
-                "command": "csv-align-mode.disable",
-                "title": "Disable Align CSV mode"
+                "command": "auto-align.disable",
+                "title": "Auto Align: Disable auto align mode"
+            },
+            {
+                "command": "auto-align.changeSeparator",
+                "title": "Auto Align: Change Separator"
             }
-        ]
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "auto-align configuration",
+            "properties": {
+                "autoAlign.separator": {
+                    "type": "string",
+                    "description": "Separator for alignment",
+                    "default": ","
+                }
+            }
+        }
     },
     "devDependencies": {
         "vscode": "^1.0.0"
