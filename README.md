@@ -44,6 +44,10 @@ This flag can be set using the command **'Auto Align: Enable auto align mode'** 
 
 This is the delay after which the file is formatted when you stop typing.
 
+`autoAlign.dimSeparator`
+
+When auto align is enabled, the separators are dimmed to aid readability. Set this to false if you would prefer not to dim them.
+
 ## Known issues
 
 Adding and removing columns must be done by modifying the first line of the file containing a separator.
