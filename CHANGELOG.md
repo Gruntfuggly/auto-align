@@ -1,3 +1,6 @@
+# v0.0.4 - 2018-03-11
+- Add a video to README.md, showing usage
+
 # v0.0.3 - 2018-03-11
 - Reduce size of TODOs in readme
 

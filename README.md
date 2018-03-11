@@ -1,5 +1,7 @@
 # Auto Align
 
+<img src="https://raw.githubusercontent.com/Gruntfuggly/auto-align/master/auto-align.gif">
+
 This is basically a poor man's spreadsheet. It auto formats a file, aligning columns by padding with spaces. It uses commas for .csv files and vertical bars for .bsv files. You can also add other separators for other file types if you want.
 
 It will find the first and last lines in the file containing the separator and format all lines between.
