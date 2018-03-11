@@ -8,9 +8,9 @@ Note: If you need to add or remove columns, currently you MUST modify the first 
 
 Another Note: I wrote this because I often feel the need to write files in a simple table format, but don't want to use Excel. It is probably very inefficient and may fail in lots of ways. YMMV...
 
-#TODO: Allow changing number of columns from any line
-#TODO: Highight headings in bold (or something)
-#TODO: Add sort functionality
+#### TODO: Allow changing number of columns from any line
+#### TODO: Highight headings in bold (or something)
+#### TODO: Add sort functionality
 
 ## Installing
 
