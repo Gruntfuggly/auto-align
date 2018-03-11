@@ -3,7 +3,7 @@
     "displayName": "Auto Align",
     "description": "Automatically align by commas, vertical bars, etc.",
     "icon": "icon.png",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "publisher": "Gruntfuggly",
     "repository": "https://github.com/Gruntfuggly/auto-align",
     "engines": {
@@ -39,10 +39,36 @@
             "type": "object",
             "title": "auto-align configuration",
             "properties": {
-                "autoAlign.separator": {
-                    "type": "string",
-                    "description": "Separator for alignment",
-                    "default": ","
+                "autoAlign.enabled": {
+                    "type": "object",
+                    "description": "When true, auto formatting is enabled for the file extension",
+                    "default": {
+                        "csv": true,
+                        "bsv": true
+                    }
+                },
+                "autoAlign.associations": {
+                    "type": "object",
+                    "description": "Glob patterns to match files that should have auto formatting enabled",
+                    "default": {
+                        "csv": ",",
+                        "bsv": "|"
+                    }
+                },
+                "autoAlign.delay": {
+                    "type": "number",
+                    "description": "The delay in milliseconds before auto formatting",
+                    "default": 1000
+                },
+                "autoAlign.extraSpace": {
+                    "type": "boolean",
+                    "description": "Automatically add an extra space after the separator for readability",
+                    "default": true
+                },
+                "autoAlign.dimSeparators": {
+                    "type": "boolean",
+                    "description": "Set to true to dim the separators when active",
+                    "default": true
                 }
             }
         }

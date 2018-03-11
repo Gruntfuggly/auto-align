@@ -1,25 +1,45 @@
 var vscode = require( 'vscode' ),
     path = require( 'path' );
 
-var separator;
 var startEndField;
 var innerField;
 
 function activate( context )
 {
-    var enabled = true;
-
     var button = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Left, 0 );
 
     var formatTimeout;
 
     String.prototype.rtrim = function() { return this.replace( /\s+$/, '' ); };
 
+    function getExtension()
+    {
+        var editor = vscode.window.activeTextEditor;
+        if( editor && editor.document )
+        {
+            ext = path.extname( editor.document.fileName );
+            if( ext && ext.length > 1 )
+            {
+                return ext.substr( 1 );
+            }
+        }
+        return "";
+    }
+
+    function associatedFileSeparator()
+    {
+        var associations = vscode.workspace.getConfiguration( 'autoAlign' ).associations;
+        return associations ? associations[ getExtension() ] : undefined;
+    }
+
     function updateSeparator()
     {
-        separator = vscode.workspace.getConfiguration( 'autoAlign' ).separator;
-        startEndField = new RegExp( "(^.*?\\" + separator + "|\\" + separator + ".*? $)" );
-        innerField = new RegExp( "\\" + separator + ".*?\\" + separator );
+        var separator = associatedFileSeparator();
+        if( separator )
+        {
+            startEndField = new RegExp( "(^.*?\\" + separator + "|\\" + separator + ".*? $)" );
+            innerField = new RegExp( "\\" + separator + ".*?\\" + separator );
+        }
     }
 
     function appendColumn( lines, linesParts, max )
@@ -76,6 +96,7 @@ function activate( context )
 
     function alignCSV( textEditor, ranges )
     {
+        var separator = associatedFileSeparator();
         var document = textEditor.document;
         var text = document.getText();
         var firstLine = document.positionAt( text.indexOf( separator ) );
@@ -88,11 +109,12 @@ function activate( context )
         }
 
         var linesParts = lines.map( line => line.text.split( separator ) );
+        var extraSpace = vscode.workspace.getConfiguration( 'autoAlign' ).extraSpace === true ? " " : "";
         linesParts = linesParts.map( function( line )
         {
             return line.map( function( part, index )
             {
-                return ( index === 0 ? "" : " " ) + trim( part );
+                return ( index === 0 ? "" : extraSpace ) + trim( part );
             } );
         } );
         var newLineTexts = [];
@@ -115,22 +137,27 @@ function activate( context )
 
     function decorate()
     {
-        var highlights = [];
-
         var editor = vscode.window.activeTextEditor;
 
-        if( enabled )
-        {
-            var text = editor.document.getText();
+        var highlights = [];
 
-            var pattern = new RegExp( "\\" + separator, 'g' );
-            var match;
-            while( match = pattern.exec( text ) )
+        if( vscode.workspace.getConfiguration( 'autoAlign' ).dimSeparators === true )
+        {
+            var separator = associatedFileSeparator();
+
+            if( vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] )
             {
-                var startPos = editor.document.positionAt( match.index );
-                var endPos = editor.document.positionAt( match.index + match[ 0 ].length );
-                var decoration = { range: new vscode.Range( startPos, endPos ) };
-                highlights.push( decoration );
+                var text = editor.document.getText();
+
+                var pattern = new RegExp( "\\" + separator, 'g' );
+                var match;
+                while( match = pattern.exec( text ) )
+                {
+                    var startPos = editor.document.positionAt( match.index );
+                    var endPos = editor.document.positionAt( match.index + match[ 0 ].length );
+                    var decoration = { range: new vscode.Range( startPos, endPos ) };
+                    highlights.push( decoration );
+                }
             }
         }
 
@@ -166,14 +193,21 @@ function activate( context )
             {
                 currentWordRange = editor.document.getWordRangeAtPosition( selection.active, innerField );
             }
-            var currentWord = text.substring( editor.document.offsetAt( currentWordRange.start ) + 1, editor.document.offsetAt( currentWordRange.end ) - 1 );
-            var currentWordStart = editor.document.offsetAt( currentWordRange.start ) + 1;
-            var currentWordEnd = currentWordStart + currentWord.rtrim().length + 1;
-            if( cursorPos > currentWordEnd )
+            if( currentWordRange )
             {
-                var position = editor.document.positionAt( currentWordEnd );
-                editor.selection = new vscode.Selection( position, position );
-                editor.revealRange( editor.selection, vscode.TextEditorRevealType.Default );
+                var currentWord = text.substring( editor.document.offsetAt( currentWordRange.start ) + 1, editor.document.offsetAt( currentWordRange.end ) - 1 );
+                var currentWordStart = editor.document.offsetAt( currentWordRange.start ) + 1;
+                var currentWordEnd = currentWordStart + currentWord.rtrim().length + 1;
+                if( cursorPos > currentWordEnd )
+                {
+                    var position = editor.document.positionAt( currentWordEnd );
+                    editor.selection = new vscode.Selection( position, position );
+                    editor.revealRange( editor.selection, vscode.TextEditorRevealType.Default );
+                }
+            }
+            else
+            {
+                console.log( "Failed to find current word" );
             }
         }
     }
@@ -181,77 +215,94 @@ function activate( context )
     function go( e )
     {
         clearTimeout( formatTimeout );
-        if( enabled )
+        if( vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] )
         {
             var editor = vscode.window.activeTextEditor;
 
-            if( editor && path.extname( editor.document.fileName ) === ".csv" )
+            var delay = vscode.workspace.getConfiguration( 'autoAlign' ).delay;
+            if( e && ( e.kind && e.kind == vscode.TextEditorSelectionChangeKind.Mouse ) )
             {
-                var delay = 1000;
-                if( e && ( e.kind && e.kind == vscode.TextEditorSelectionChangeKind.Mouse ) || e.decorateNow === true )
-                {
-                    delay = 0;
-                }
-
-                formatTimeout = setTimeout( function()
-                {
-                    if( e.kind === undefined || e.kind == vscode.TextEditorSelectionChangeKind.Keyboard )
-                    {
-                        align();
-                    }
-                    positionCursor();
-                    setTimeout( decorate, 100 );
-                }, delay );
+                delay = 0;
             }
+
+            formatTimeout = setTimeout( function()
+            {
+                if( e.kind === undefined || e.kind == vscode.TextEditorSelectionChangeKind.Keyboard )
+                {
+                    align();
+                }
+                positionCursor();
+                setTimeout( decorate, 100 );
+            }, delay );
         }
     }
 
     function setButton( filename )
     {
-        button.text = "Auto Align (" + separator + "): $(thumbs" + ( enabled ? "up" : "down" ) + ")";
+        var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] === true;
+
+        button.text = "Auto Align: $(thumbs" + ( enabled ? "up" : "down" ) + ")";
         button.command = 'auto-align.' + ( enabled ? 'disable' : 'enable' );
-        if( filename )
+        if( associatedFileSeparator() )
         {
-            if( path.extname( filename ) === ".csv" )
-            {
-                button.show();
-            }
-            else
-            {
-                button.hide();
-            }
+            button.show();
+        }
+        else
+        {
+            button.hide();
         }
     }
 
     function enable()
     {
-        enabled = true;
-        setButton();
-        go( { decorateNow: true } );
+        var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).enabled;
+        enabled[ getExtension() ] = true;
+        vscode.workspace.getConfiguration( 'autoAlign' ).update( 'enabled', enabled, true ).then(
+            function()
+            {
+                setButton();
+                go( { decorateNow: true } );
+            }
+        );
+
     }
 
     function disable()
     {
-        enabled = false;
-        setButton();
-        setTimeout( decorate, 100 );
+        var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).enabled;
+        enabled[ getExtension() ] = false;
+        vscode.workspace.getConfiguration( 'autoAlign' ).update( 'enabled', enabled, true ).then(
+            function()
+            {
+                setButton();
+                setTimeout( decorate, 100 );
+            }
+        );
     }
 
     function changeSeparator()
     {
-        var oldSeparator = vscode.workspace.getConfiguration( 'autoalign' ).separator;
-        vscode.window.showInputBox( { prompt: "Auto Align: Please enter the separator (current:\"" + oldSeparator + "\"):" } ).then(
+        var editor = vscode.window.activeTextEditor;
+        var prompt = "Enter the separator for ." + getExtension() + " files";
+        var oldSeparator = associatedFileSeparator();
+        vscode.window.showInputBox( { prompt: prompt + " (current:\"" + oldSeparator + "\"):" } ).then(
             function( newSeparator )
             {
                 if( newSeparator )
                 {
-                    vscode.workspace.getConfiguration( 'autoAlign' ).update( 'separator', newSeparator, true ).then( function()
+                    var associations = vscode.workspace.getConfiguration( 'autoAlign' ).associations;
+                    var updated = function()
                     {
                         separator = newSeparator;
                         setButton();
                         updateSeparator();
                         go( {} );
-                    } );
+                    }
+                    if( editor.document )
+                    {
+                        associations[ getExtension() ] = newSeparator;
+                        vscode.workspace.getConfiguration( 'autoAlign' ).update( 'associations', associations, true ).then( updated );
+                    }
                 }
             } );
     }
@@ -264,10 +315,15 @@ function activate( context )
     vscode.window.onDidChangeTextEditorSelection( go );
     vscode.window.onDidChangeActiveTextEditor( function( e )
     {
-        if( e && e.document )
+        if( vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] )
         {
+            updateSeparator();
             setButton( e.document.fileName );
             go( {} );
+        }
+        else
+        {
+            setButton();
         }
     } );
 
