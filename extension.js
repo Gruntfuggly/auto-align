@@ -10,7 +10,8 @@ function activate( context )
 
     var formatTimeout;
 
-    String.prototype.rtrim = function() { return this.replace( /\s+$/, '' ); };
+    String.prototype.rtrim = function() { return this.replace( /\s+$/, '' ); }
+    String.prototype.trim = function() { return this.replace( /^\s+|\s+$/g, '' ); }
 
     function getExtension()
     {
@@ -68,18 +69,13 @@ function activate( context )
             var padAmount = text ? ( count - text.length ) : count;
             return ( text ? text : "" ) + ' '.repeat( padAmount );
         }
-        return text;
-    }
-
-    function trim( text )
-    {
-        return text.replace( /^\s+|\s+$/g, '' );
+        return text ? text : "";
     }
 
     function maxLength( texts, partIndex )
     {
         var max = 0;
-        return texts.map( text => ( text[ partIndex ] ? text[ partIndex ].length : 0 ) ).reduce( ( prev, curr ) =>
+        return texts.map( text => ( text[ partIndex ] ? text[ partIndex ].rtrim().length : 0 ) ).reduce( ( prev, curr ) =>
         {
             return curr >= prev ? curr : prev;
         } );
@@ -118,17 +114,31 @@ function activate( context )
         {
             return line.map( function( part, index )
             {
-                return ( index === 0 ? "" : extraSpace ) + trim( part );
+                return ( index === 0 ? "" : extraSpace ) + part.trim();
             } );
         } );
+        var linePartCount = 0;
+        linesParts.map( function( line )
+        {
+            if( line.length > linePartCount )
+            {
+                linePartCount = line.length;
+            }
+        } );
+
         var newLineTexts = [];
-        var linePartCount = linesParts[ 0 ].length;
         for( var columnIndex = 0; columnIndex < linePartCount; columnIndex++ )
         {
-            var max = columnIndex < linePartCount - 1 ? maxLength( linesParts, 0 ) : 0;
-            appendColumn( newLineTexts, linesParts, max );
-            if( columnIndex != linePartCount - 1 )
-                appendDelimeter( newLineTexts, separator );
+            var columnWidth = maxLength( linesParts, 0 );
+            var max = columnIndex < linePartCount - 1 ? columnWidth : 0;
+            if( columnWidth > 0 )
+            {
+                if( columnIndex > 0 )
+                {
+                    appendDelimeter( newLineTexts, separator );
+                }
+                appendColumn( newLineTexts, linesParts, max );
+            }
         }
 
         replaceLinesWithText( textEditor, lines, newLineTexts );
