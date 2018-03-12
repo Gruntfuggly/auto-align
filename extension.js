@@ -63,8 +63,12 @@ function activate( context )
 
     function padRight( text, count )
     {
-        var padAmount = text ? ( count - text.length ) : count;
-        return ( text ? text : "" ) + ' '.repeat( padAmount );
+        if( count > 0 )
+        {
+            var padAmount = text ? ( count - text.length ) : count;
+            return ( text ? text : "" ) + ' '.repeat( padAmount );
+        }
+        return text;
     }
 
     function trim( text )
@@ -121,7 +125,7 @@ function activate( context )
         var linePartCount = linesParts[ 0 ].length;
         for( var columnIndex = 0; columnIndex < linePartCount; columnIndex++ )
         {
-            var max = maxLength( linesParts, 0 );
+            var max = columnIndex < linePartCount - 1 ? maxLength( linesParts, 0 ) : 0;
             appendColumn( newLineTexts, linesParts, max );
             if( columnIndex != linePartCount - 1 )
                 appendDelimeter( newLineTexts, separator );
