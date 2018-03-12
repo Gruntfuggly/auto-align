@@ -13,6 +13,7 @@ Another Note: I wrote this because I often feel the need to write files in a sim
 #### TODO: Allow changing number of columns from any line
 #### TODO: Highight headings in bold (or something)
 #### TODO: Add sort functionality
+#### TODO: Add warning if file already contains new separator
 
 ## Installing
 
