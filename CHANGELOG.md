@@ -1,3 +1,6 @@
+# v0.0.5 - 2018-03-12
+- Allow changing number of columns from any line
+
 # v0.0.4 - 2018-03-11
 - Add a video to README.md, showing usage
 

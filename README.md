@@ -10,7 +10,6 @@ Note: If you need to add or remove columns, currently you MUST modify the first 
 
 Another Note: I wrote this because I often feel the need to write files in a simple table format, but don't want to use Excel. It is probably very inefficient and may fail in lots of ways. YMMV...
 
-#### TODO: Allow changing number of columns from any line
 #### TODO: Highight headings in bold (or something)
 #### TODO: Add sort functionality
 #### TODO: Add warning if file already contains new separator
@@ -48,10 +47,6 @@ This is the delay after which the file is formatted when you stop typing.
 `autoAlign.dimSeparator`
 
 When auto align is enabled, the separators are dimmed to aid readability. Set this to false if you would prefer not to dim them.
-
-## Known issues
-
-Adding and removing columns must be done by modifying the first line of the file containing a separator.
 
 ## Credits
 

@@ -219,10 +219,6 @@ function activate( context )
                     editor.revealRange( editor.selection, vscode.TextEditorRevealType.Default );
                 }
             }
-            else
-            {
-                console.log( "Failed to find current word" );
-            }
         }
     }
 
