@@ -1,3 +1,6 @@
+# v0.0.6 - 2018-03-20
+- Handle trimming of empty trailing columns more intelligently
+
 # v0.0.5 - 2018-03-12
 - Allow changing number of columns from any line
 

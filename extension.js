@@ -127,18 +127,24 @@ function activate( context )
         } );
 
         var newLineTexts = [];
+        var columnWidths = [];
+        for( var columnIndex = linePartCount -1 ; columnIndex != 0; columnIndex-- )
+        {
+            columnWidths[ columnIndex ] = maxLength( linesParts, columnIndex );
+            if( columnWidths[ columnIndex ] === 0 && columnIndex === linePartCount - 1 )
+            {
+                linePartCount--;
+            }
+        }
+
         for( var columnIndex = 0; columnIndex < linePartCount; columnIndex++ )
         {
-            var columnWidth = maxLength( linesParts, 0 );
-            var max = columnIndex < linePartCount - 1 ? columnWidth : 0;
-            if( columnWidth > 0 )
+            var max = columnIndex < linePartCount - 1 ? columnWidths[ columnIndex ] : 0;
+            if( columnIndex > 0 )
             {
-                if( columnIndex > 0 )
-                {
-                    appendDelimeter( newLineTexts, separator );
-                }
-                appendColumn( newLineTexts, linesParts, max );
+                appendDelimeter( newLineTexts, separator );
             }
+            appendColumn( newLineTexts, linesParts, max );
         }
 
         replaceLinesWithText( textEditor, lines, newLineTexts );

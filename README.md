@@ -6,13 +6,12 @@ This is basically a poor man's spreadsheet. It auto formats a file, aligning col
 
 It will find the first and last lines in the file containing the separator and format all lines between.
 
-Note: If you need to add or remove columns, currently you MUST modify the first line containing the separator, otherwise you might lose some file content. A forthcoming update will allow any line to be modiied.
+*Note: This works well with reasonably small files. With a 2000 line, 10 column file it's still usable. With 10000 lines it starts to lag a bit. I wrote this because I often feel the need to write files in a simple table format, but don't want to use Excel. **You may want to take a copy of your file first, just to be safe**.*
 
-Another Note: I wrote this because I often feel the need to write files in a simple table format, but don't want to use Excel. It is probably very inefficient and may fail in lots of ways. YMMV...
-
-#### TODO: Highight headings in bold (or something)
-#### TODO: Add sort functionality
-#### TODO: Add warning if file already contains new separator
+##### TODO: Highight headings in bold (or something)
+##### TODO: Add sort functionality
+##### TODO: Add warning if file already contains new separator
+##### TODO: Add methods to insert/remove empty columns
 
 ## Installing
 
