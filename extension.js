@@ -74,7 +74,6 @@ function activate( context )
 
     function maxLength( texts, partIndex )
     {
-        var max = 0;
         return texts.map( text => ( text[ partIndex ] ? text[ partIndex ].rtrim().length : 0 ) ).reduce( ( prev, curr ) =>
         {
             return curr >= prev ? curr : prev;
@@ -128,7 +127,7 @@ function activate( context )
 
         var newLineTexts = [];
         var columnWidths = [];
-        for( var columnIndex = linePartCount -1 ; columnIndex != 0; columnIndex-- )
+        for( var columnIndex = linePartCount - 1; columnIndex >= 0; columnIndex-- )
         {
             columnWidths[ columnIndex ] = maxLength( linesParts, columnIndex );
             if( columnWidths[ columnIndex ] === 0 && columnIndex === linePartCount - 1 )

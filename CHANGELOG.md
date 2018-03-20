@@ -1,3 +1,6 @@
+# v0.0.7 - 2018-03-20
+- Fix stupid error
+
 # v0.0.6 - 2018-03-20
 - Handle trimming of empty trailing columns more intelligently
 
