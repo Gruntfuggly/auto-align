@@ -3,7 +3,7 @@
     "displayName": "Auto Align",
     "description": "Automatically align by commas, vertical bars, etc.",
     "icon": "icon.png",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "publisher": "Gruntfuggly",
     "repository": "https://github.com/Gruntfuggly/auto-align",
     "engines": {
@@ -20,7 +20,7 @@
         "commands": [
             {
                 "command": "auto-align.format",
-                "title": "Auto Align: Align"
+                "title": "Auto Align: Format"
             },
             {
                 "command": "auto-align.enable",
@@ -69,6 +69,11 @@
                     "type": "boolean",
                     "description": "Set to true to dim the separators when active",
                     "default": true
+                },
+                "autoAlign.collapseOnDisable": {
+                    "type": "boolean",
+                    "description": "Collapse the fields when disabling auto align",
+                    "default": false
                 }
             }
         }

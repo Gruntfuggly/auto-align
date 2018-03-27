@@ -1,3 +1,6 @@
+# v0.0.8 - 2018-03-27
+- Add collapse on disable (off by default)
+
 # v0.0.7 - 2018-03-20
 - Fix stupid error
 

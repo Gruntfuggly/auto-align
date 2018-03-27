@@ -47,6 +47,10 @@ This is the delay after which the file is formatted when you stop typing.
 
 When auto align is enabled, the separators are dimmed to aid readability. Set this to false if you would prefer not to dim them.
 
+`autoAlign.collapseOnDisable`
+
+If set to true, the fields will all be collapsed (spaces trimmed) when auto align is disabled. The file can also be collapsed manually using the **'Auto Align: Format'** command if auto align is not enabled.
+
 ## Credits
 
 I shamelessly stole the alignment code from [dakara](https://marketplace.visualstudio.com/search?term=publisher%3A%22dakara%22&target=VSCode&category=All%20categories&sortBy=Relevance)'s [Transformer](https://marketplace.visualstudio.com/items?itemName=dakara.transformer) extension.

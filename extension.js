@@ -69,6 +69,10 @@ function activate( context )
             var padAmount = text ? ( count - text.length ) : count;
             return ( text ? text : "" ) + ' '.repeat( padAmount );
         }
+        else if( count < 0 )
+        {
+            return text ? text.trim() : "";
+        }
         return text ? text : "";
     }
 
@@ -95,6 +99,8 @@ function activate( context )
 
     function alignCSV( textEditor, ranges )
     {
+        var expand = vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] === true;
+
         var separator = associatedFileSeparator();
         var document = textEditor.document;
         var text = document.getText();
@@ -108,14 +114,17 @@ function activate( context )
         }
 
         var linesParts = lines.map( line => line.text.split( separator ) );
-        var extraSpace = vscode.workspace.getConfiguration( 'autoAlign' ).extraSpace === true ? " " : "";
-        linesParts = linesParts.map( function( line )
+        if( expand === true )
         {
-            return line.map( function( part, index )
+            var extraSpace = vscode.workspace.getConfiguration( 'autoAlign' ).extraSpace === true ? " " : "";
+            linesParts = linesParts.map( function( line )
             {
-                return ( index === 0 ? "" : extraSpace ) + part.trim();
+                return line.map( function( part, index )
+                {
+                    return ( index === 0 ? "" : extraSpace ) + part.trim();
+                } );
             } );
-        } );
+        }
         var linePartCount = 0;
         linesParts.map( function( line )
         {
@@ -126,19 +135,21 @@ function activate( context )
         } );
 
         var newLineTexts = [];
-        var columnWidths = [];
-        for( var columnIndex = linePartCount - 1; columnIndex >= 0; columnIndex-- )
+        var columnWidths = Array( linePartCount ).fill( -1 );
+        if( expand )
         {
-            columnWidths[ columnIndex ] = maxLength( linesParts, columnIndex );
-            if( columnWidths[ columnIndex ] === 0 && columnIndex === linePartCount - 1 )
+            for( var columnIndex = linePartCount - 1; columnIndex >= 0; columnIndex-- )
             {
-                linePartCount--;
+                columnWidths[ columnIndex ] = maxLength( linesParts, columnIndex );
+                if( columnWidths[ columnIndex ] === 0 && columnIndex === linePartCount - 1 )
+                {
+                    linePartCount--;
+                }
             }
         }
-
         for( var columnIndex = 0; columnIndex < linePartCount; columnIndex++ )
         {
-            var max = columnIndex < linePartCount - 1 ? columnWidths[ columnIndex ] : 0;
+            var max = columnIndex < linePartCount - 1 ? columnWidths[ columnIndex ] : ( expand ? 0 : -1 );
             if( columnIndex > 0 )
             {
                 appendDelimeter( newLineTexts, separator );
