@@ -302,6 +302,11 @@ function activate( context )
             {
                 setButton();
                 setTimeout( decorate, 100 );
+
+                if( vscode.workspace.getConfiguration( 'autoAlign' ).collapseOnDisable === true )
+                {
+                    align();
+                }
             }
         );
     }
