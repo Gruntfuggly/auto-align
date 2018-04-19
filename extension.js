@@ -281,7 +281,7 @@ function activate( context )
 
     function enable()
     {
-        var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).enabled;
+        var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' );
         enabled[ getExtension() ] = true;
         vscode.workspace.getConfiguration( 'autoAlign' ).update( 'enabled', enabled, true ).then(
             function()
@@ -295,7 +295,7 @@ function activate( context )
 
     function disable()
     {
-        var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).enabled;
+        var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' );
         enabled[ getExtension() ] = false;
         vscode.workspace.getConfiguration( 'autoAlign' ).update( 'enabled', enabled, true ).then(
             function()

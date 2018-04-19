@@ -1,3 +1,6 @@
+# v0.0.10 - 2018-04-19
+- Fix fetching of enabled settings
+
 # v0.0.9 - 2018-03-27
 - Actually implement the collapseOnDisable setting (doh!)
 
