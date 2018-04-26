@@ -4,6 +4,8 @@ var vscode = require( 'vscode' ),
 var startEndField;
 var innerField;
 
+var lastVersion = 1;
+
 function activate( context )
 {
     var button = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Left, 0 );
@@ -249,26 +251,35 @@ function activate( context )
 
     function go( e )
     {
-        clearTimeout( formatTimeout );
-        if( vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] )
+        if( e.kind && e.kind !== vscode.TextEditorSelectionChangeKind.Mouse && e.textEditor )
         {
-            var editor = vscode.window.activeTextEditor;
+            var version = e.textEditor._documentData.version;
 
-            var delay = vscode.workspace.getConfiguration( 'autoAlign' ).delay;
-            if( e && ( e.kind && e.kind == vscode.TextEditorSelectionChangeKind.Mouse ) )
+            if( version > lastVersion )
             {
-                delay = 0;
-            }
-
-            formatTimeout = setTimeout( function()
-            {
-                if( e.kind === undefined || e.kind == vscode.TextEditorSelectionChangeKind.Keyboard )
+                lastVersion = version;
+                clearTimeout( formatTimeout );
+                if( vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] )
                 {
-                    align( vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] === true );
+                    var editor = vscode.window.activeTextEditor;
+
+                    var delay = vscode.workspace.getConfiguration( 'autoAlign' ).delay;
+                    if( e && ( e.kind && e.kind == vscode.TextEditorSelectionChangeKind.Mouse ) )
+                    {
+                        delay = 0;
+                    }
+
+                    formatTimeout = setTimeout( function()
+                    {
+                        if( e.kind === undefined || e.kind == vscode.TextEditorSelectionChangeKind.Keyboard )
+                        {
+                            align( vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] === true );
+                        }
+                        positionCursor();
+                        setTimeout( decorate, 100 );
+                    }, delay );
                 }
-                positionCursor();
-                setTimeout( decorate, 100 );
-            }, delay );
+            }
         }
     }
 
@@ -425,6 +436,7 @@ function activate( context )
         {
             updateSeparator();
             setButton( e.document.fileName );
+            lastVersion = e.document.version;
             go( {} );
         }
         else
