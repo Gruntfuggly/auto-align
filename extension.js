@@ -97,9 +97,12 @@ function activate( context )
         }, { undoStopAfter: false, undoStopBefore: false } );
     }
 
-    function alignCSV( textEditor, ranges )
+    function alignCSV( textEditor, ranges, expand )
     {
-        var expand = vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] === true;
+        if( expand === undefined )
+        {
+            expand = true;
+        }
 
         var separator = associatedFileSeparator();
         var document = textEditor.document;
@@ -194,7 +197,7 @@ function activate( context )
         editor.setDecorations( decorationType, highlights );
     }
 
-    function align()
+    function align( expand )
     {
         var editor = vscode.window.activeTextEditor;
 
@@ -204,7 +207,7 @@ function activate( context )
 
             var selections = [];
             selections.push( new vscode.Range( editor.document.positionAt( 0 ), editor.document.positionAt( text.length - 1 ) ) );
-            alignCSV( editor, selections );
+            alignCSV( editor, selections, expand );
         }
     }
 
@@ -255,7 +258,7 @@ function activate( context )
             {
                 if( e.kind === undefined || e.kind == vscode.TextEditorSelectionChangeKind.Keyboard )
                 {
-                    align();
+                    align( vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] === true );
                 }
                 positionCursor();
                 setTimeout( decorate, 100 );
@@ -305,7 +308,7 @@ function activate( context )
 
                 if( vscode.workspace.getConfiguration( 'autoAlign' ).collapseOnDisable === true )
                 {
-                    align();
+                    align( false );
                 }
             }
         );
