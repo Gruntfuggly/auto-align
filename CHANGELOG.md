@@ -1,3 +1,6 @@
+# v0.0.12 - 2018-04-26
+- Only align columns when document changes
+
 # v0.0.11 - 2018-04-26
 - Handle cursor positioning better when expanding
 - Add support for tabbing between fields

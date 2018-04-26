@@ -4,7 +4,7 @@ var vscode = require( 'vscode' ),
 var startEndField;
 var innerField;
 
-var lastVersion = 1;
+var lastVersion;
 
 function activate( context )
 {
@@ -251,34 +251,30 @@ function activate( context )
 
     function go( e )
     {
-        if( e.kind && e.kind !== vscode.TextEditorSelectionChangeKind.Mouse && e.textEditor )
+        var editor = vscode.window.activeTextEditor;
+        var version = editor.document.version;
+
+        if( !lastVersion || version > lastVersion )
         {
-            var version = e.textEditor._documentData.version;
-
-            if( version > lastVersion )
+            lastVersion = version;
+            clearTimeout( formatTimeout );
+            if( vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] )
             {
-                lastVersion = version;
-                clearTimeout( formatTimeout );
-                if( vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] )
+                var delay = vscode.workspace.getConfiguration( 'autoAlign' ).delay;
+                if( e && ( e.kind && e.kind == vscode.TextEditorSelectionChangeKind.Mouse ) )
                 {
-                    var editor = vscode.window.activeTextEditor;
-
-                    var delay = vscode.workspace.getConfiguration( 'autoAlign' ).delay;
-                    if( e && ( e.kind && e.kind == vscode.TextEditorSelectionChangeKind.Mouse ) )
-                    {
-                        delay = 0;
-                    }
-
-                    formatTimeout = setTimeout( function()
-                    {
-                        if( e.kind === undefined || e.kind == vscode.TextEditorSelectionChangeKind.Keyboard )
-                        {
-                            align( vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] === true );
-                        }
-                        positionCursor();
-                        setTimeout( decorate, 100 );
-                    }, delay );
+                    delay = 0;
                 }
+
+                formatTimeout = setTimeout( function()
+                {
+                    if( !e || e.kind === undefined || e.kind == vscode.TextEditorSelectionChangeKind.Keyboard )
+                    {
+                        align( vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] === true );
+                    }
+                    positionCursor();
+                    setTimeout( decorate, 100 );
+                }, delay );
             }
         }
     }
@@ -308,7 +304,7 @@ function activate( context )
             function()
             {
                 setButton();
-                go( { decorateNow: true } );
+                go();
             }
         );
 
@@ -349,7 +345,7 @@ function activate( context )
                         separator = newSeparator;
                         setButton();
                         updateSeparator();
-                        go( {} );
+                        go( { textEditor: vscode.activeTextEditor } );
                     }
                     if( editor.document )
                     {
@@ -436,8 +432,8 @@ function activate( context )
         {
             updateSeparator();
             setButton( e.document.fileName );
-            lastVersion = e.document.version;
-            go( {} );
+            lastVersion = e.document.version - 1;
+            go();
         }
         else
         {
