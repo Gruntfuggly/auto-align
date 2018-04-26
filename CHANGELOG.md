@@ -1,6 +1,7 @@
 # v0.0.11 - 2018-04-26
 - Handle cursor positioning better when expanding
 - Add support for tabbing between fields
+- Make align column and collapse column commands available
 
 # v0.0.10 - 2018-04-19
 - Fix fetching of enabled settings

@@ -19,8 +19,12 @@
     "contributes": {
         "commands": [
             {
-                "command": "auto-align.format",
-                "title": "Auto Align: Format"
+                "command": "auto-align.alignColumns",
+                "title": "Auto Align: Align Columns"
+            },
+            {
+                "command": "auto-align.collapseColumns",
+                "title": "Auto Align: Collapse Columns"
             },
             {
                 "command": "auto-align.enable",

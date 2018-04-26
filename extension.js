@@ -409,7 +409,8 @@ function activate( context )
     }
 
     context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.changeSeparator', changeSeparator ) );
-    context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.format', align ) );
+    context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.alignColumns', function() { align( true ); } ) );
+    context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.collapseColumns', function() { align( false ); } ) );
     context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.enable', enable ) );
     context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.disable', disable ) );
     context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.moveCursorToNextField', moveCursorToNextField ) );
