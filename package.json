@@ -3,7 +3,7 @@
     "displayName": "Auto Align",
     "description": "Automatically align by commas, vertical bars, etc.",
     "icon": "icon.png",
-    "version": "0.0.10",
+    "version": "0.0.11",
     "publisher": "Gruntfuggly",
     "repository": "https://github.com/Gruntfuggly/auto-align",
     "engines": {
@@ -33,6 +33,26 @@
             {
                 "command": "auto-align.changeSeparator",
                 "title": "Auto Align: Change Separator"
+            },
+            {
+                "command": "auto-align.moveCursorToNextField",
+                "title": "Auto Align: Move Cursor to Next Field"
+            },
+            {
+                "command": "auto-align.moveCursorToPreviousField",
+                "title": "Auto Align: Move Cursor to Previous Field"
+            }
+        ],
+        "keybindings": [
+            {
+                "key": "tab",
+                "command": "auto-align.moveCursorToNextField",
+                "when": "editorTextFocus && auto-align-enabled"
+            },
+            {
+                "key": "shift+tab",
+                "command": "auto-align.moveCursorToPreviousField",
+                "when": "editorTextFocus && auto-align-enabled"
             }
         ],
         "configuration": {

@@ -6,12 +6,14 @@ This is basically a poor man's spreadsheet. It auto formats a file, aligning col
 
 It will find the first and last lines in the file containing the separator and format all lines between.
 
+When active, the tab key will move to the next field and shift+tab will move to the previous field.
+
 *Note: This works well with reasonably small files. With a 2000 line, 10 column file it's still usable. With 10000 lines it starts to lag a bit. I wrote this because I often feel the need to write files in a simple table format, but don't want to use Excel. **You may want to take a copy of your file first, just to be safe**.*
 
-##### TODO: Highight headings in bold (or something)
-##### TODO: Add sort functionality
-##### TODO: Add warning if file already contains new separator
-##### TODO: Add methods to insert/remove empty columns
+ - [ ] Highlight headings in bold (or something)
+ - [ ] Add sort functionality
+ - [ ] Add warning if file already contains new separator
+ - [ ] Add methods to insert/remove empty columns
 
 ## Installing
 
@@ -50,6 +52,10 @@ When auto align is enabled, the separators are dimmed to aid readability. Set th
 `autoAlign.collapseOnDisable`
 
 If set to true, the fields will all be collapsed (spaces trimmed) when auto align is disabled. The file can also be collapsed manually using the **'Auto Align: Format'** command if auto align is not enabled.
+
+`autoAlign.extraSpace`
+
+By default, an extra space is inserted after the separator to aid readability. If you don't want this, set this flag to false.
 
 ## Credits
 

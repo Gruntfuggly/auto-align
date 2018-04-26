@@ -290,6 +290,7 @@ function activate( context )
 
     function enable()
     {
+        vscode.commands.executeCommand( 'setContext', 'auto-align-enabled', true );
         var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' );
         enabled[ getExtension() ] = true;
         vscode.workspace.getConfiguration( 'autoAlign' ).update( 'enabled', enabled, true ).then(
@@ -304,6 +305,7 @@ function activate( context )
 
     function disable()
     {
+        vscode.commands.executeCommand( 'setContext', 'auto-align-enabled', false );
         var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' );
         enabled[ getExtension() ] = false;
         vscode.workspace.getConfiguration( 'autoAlign' ).update( 'enabled', enabled, true ).then(
@@ -347,15 +349,78 @@ function activate( context )
             } );
     }
 
+    function moveCursorToNextField()
+    {
+        var editor = vscode.window.activeTextEditor;
+        if( editor )
+        {
+            var text = editor.document.getText();
+            var cursorPos = editor.document.offsetAt( editor.selection.start );
+            var nextSeparator = text.substr( cursorPos ).indexOf( associatedFileSeparator() );
+            if( nextSeparator > -1 )
+            {
+                nextSeparator += ( vscode.workspace.getConfiguration( 'autoAlign' ).extraSpace === true ? 2 : 1 );
+            }
+            var nextLine = text.substr( cursorPos ).indexOf( '\n' );
+            if( nextLine > -1 )
+            {
+                nextLine += 1;
+            }
+            var nextPosition = [ nextSeparator, nextLine ];
+            nextPosition = nextPosition.filter( p => { return p > -1; } ).sort( ( a, b ) => a - b );
+
+            if( nextPosition.length > 0 )
+            {
+                var newPosition = editor.document.positionAt( cursorPos + nextPosition.shift() );
+                var newSelection = new vscode.Selection( newPosition, newPosition );
+                editor.selection = newSelection;
+            }
+        }
+    }
+
+    function moveCursorToPreviousField()
+    {
+        var editor = vscode.window.activeTextEditor;
+        if( editor )
+        {
+            var text = editor.document.getText();
+            var cursorPos = editor.document.offsetAt( editor.selection.start ) - 1;
+            if( vscode.workspace.getConfiguration( 'autoAlign' ).extraSpace === true )
+            {
+                cursorPos -= 1;
+            }
+            var previousSeparator = text.substr( 0, cursorPos ).lastIndexOf( associatedFileSeparator() );
+            if( previousSeparator > -1 )
+            {
+                previousSeparator += ( vscode.workspace.getConfiguration( 'autoAlign' ).extraSpace === true ? 2 : 1 );
+            }
+            var previousLine = text.substr( 0, cursorPos ).lastIndexOf( '\n' );
+            if( previousLine > -1 )
+            {
+                previousLine += 1;
+            }
+            var previousPosition = [ previousSeparator, previousLine ];
+            previousPosition = previousPosition.filter( p => { return p > -1; } ).sort( ( a, b ) => a - b );
+
+            var newPosition = editor.document.positionAt( previousPosition.length > 0 ? previousPosition.pop() : 0 );
+            var newSelection = new vscode.Selection( newPosition, newPosition );
+            editor.selection = newSelection;
+        }
+    }
+
     context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.changeSeparator', changeSeparator ) );
     context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.format', align ) );
     context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.enable', enable ) );
     context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.disable', disable ) );
+    context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.moveCursorToNextField', moveCursorToNextField ) );
+    context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.moveCursorToPreviousField', moveCursorToPreviousField ) );
 
     vscode.window.onDidChangeTextEditorSelection( go );
     vscode.window.onDidChangeActiveTextEditor( function( e )
     {
-        if( vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] )
+        var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ];
+        vscode.commands.executeCommand( 'setContext', 'auto-align-enabled', enabled );
+        if( enabled )
         {
             updateSeparator();
             setButton( e.document.fileName );
@@ -373,6 +438,7 @@ function activate( context )
 
     if( editor && editor.document )
     {
+        vscode.commands.executeCommand( 'setContext', 'auto-align-enabled', vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] );
         setButton( editor.document.fileName );
         go( {} );
     }
