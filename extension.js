@@ -94,7 +94,13 @@ function activate( context )
                 editBuilder.replace( line.range, linesNew[ lineIndex ] );
                 lineIndex++;
             } );
-        }, { undoStopAfter: false, undoStopBefore: false } );
+        }, { undoStopAfter: false, undoStopBefore: false } ).then(
+            function()
+            {
+                var newSelection = new vscode.Selection( textEditor.selection.start, textEditor.selection.start );
+                textEditor.selection = newSelection;
+            }
+        );
     }
 
     function alignCSV( textEditor, ranges, expand )
