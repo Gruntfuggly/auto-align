@@ -88,6 +88,21 @@ function activate( context )
 
     function replaceLinesWithText( textEditor, linesOld, linesNew )
     {
+        function copySelection( source )
+        {
+            var target = new vscode.Selection( source.anchor, source.active );
+            target.end = new vscode.Position( source.end );
+            target.isEmpty = source.isEmpty;
+            target.isReversed = source.isReversed;
+            target.isSingleLine = source.isSingleLine;
+            target.start = new vscode.Position( source.start );
+            return target;
+        }
+
+        var previousSelection = copySelection( textEditor.selection );
+        var previousSelections = [];
+        textEditor.selections.forEach( s => { previousSelections.push( copySelection( s ) ); } );
+
         textEditor.edit( function( editBuilder )
         {
             var lineIndex = 0;
@@ -99,8 +114,8 @@ function activate( context )
         }, { undoStopAfter: false, undoStopBefore: false } ).then(
             function()
             {
-                var newSelection = new vscode.Selection( textEditor.selection.start, textEditor.selection.start );
-                textEditor.selection = newSelection;
+                textEditor.selection = previousSelection;
+                textEditor.selections = previousSelections;
             }
         );
     }

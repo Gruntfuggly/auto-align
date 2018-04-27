@@ -59,10 +59,6 @@ If set to true, the fields will all be collapsed (spaces trimmed) when auto alig
 
 By default, an extra space is inserted after the separator to aid readability. If you don't want this, set this flag to false.
 
-## Known Issues
-
-Sometimes when selecting text, or creating multiple cursors, the editor thinks that the document has changed so it will reformat and clear the selection. I am working on this...
-
 ## Credits
 
 I shamelessly stole the alignment code from [dakara](https://marketplace.visualstudio.com/search?term=publisher%3A%22dakara%22&target=VSCode&category=All%20categories&sortBy=Relevance)'s [Transformer](https://marketplace.visualstudio.com/items?itemName=dakara.transformer) extension.

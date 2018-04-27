@@ -1,3 +1,6 @@
+# v0.0.13 - 2018-04-27
+- Preserve selections during alignment
+
 # v0.0.12 - 2018-04-26
 - Only align columns when document changes
 
