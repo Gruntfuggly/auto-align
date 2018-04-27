@@ -318,6 +318,7 @@ function activate( context )
         vscode.workspace.getConfiguration( 'autoAlign' ).update( 'enabled', enabled, true ).then(
             function()
             {
+                lastVersion = undefined;
                 setButton();
                 go();
             }

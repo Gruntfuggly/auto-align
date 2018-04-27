@@ -1,3 +1,6 @@
+# v0.0.14 - 2018-04-27
+- Make sure alignment happens when enabling
+
 # v0.0.13 - 2018-04-27
 - Preserve selections during alignment
 

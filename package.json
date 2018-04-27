@@ -3,7 +3,7 @@
     "displayName": "Auto Align",
     "description": "Automatically align by commas, vertical bars, etc.",
     "icon": "icon.png",
-    "version": "0.0.13",
+    "version": "0.0.14",
     "publisher": "Gruntfuggly",
     "repository": "https://github.com/Gruntfuggly/auto-align",
     "engines": {
