@@ -238,7 +238,7 @@ function activate( context )
     {
         var editor = vscode.window.activeTextEditor;
 
-        if( editor )
+        if( editor && vscode.workspace.getConfiguration( 'autoAlign' ).get( 'repositionCursor' ) === true )
         {
             var text = editor.document.getText();
 
@@ -266,31 +266,56 @@ function activate( context )
 
     function go( e )
     {
+        function doFormat()
+        {
+            if( !e || e.kind === undefined || e.kind == vscode.TextEditorSelectionChangeKind.Keyboard )
+            {
+                align( vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' )[ getExtension() ] === true );
+            }
+            positionCursor();
+            setTimeout( decorate, 100 );
+            formatTimeout = null;
+        };
+
         var editor = vscode.window.activeTextEditor;
         var version = editor.document.version;
 
-        if( !lastVersion || version > lastVersion )
-        {
-            lastVersion = version;
-            clearTimeout( formatTimeout );
-            if( vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' )[ getExtension() ] )
-            {
-                var delay = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'delay' );
-                if( e && ( e.kind && e.kind == vscode.TextEditorSelectionChangeKind.Mouse ) )
-                {
-                    delay = 0;
-                }
+        var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' )[ getExtension() ];
+        vscode.commands.executeCommand( 'setContext', 'auto-align-enabled', enabled );
 
-                formatTimeout = setTimeout( function()
+        if( enabled )
+        {
+            if( !lastVersion || version > lastVersion )
+            {
+                lastVersion = version;
+                clearTimeout( formatTimeout );
+                if( vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' )[ getExtension() ] )
                 {
-                    if( !e || e.kind === undefined || e.kind == vscode.TextEditorSelectionChangeKind.Keyboard )
+                    var delay = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'delay' );
+                    if( e && ( e.kind && e.kind == vscode.TextEditorSelectionChangeKind.Mouse ) )
                     {
-                        align( vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' )[ getExtension() ] === true );
+                        delay = 0;
                     }
-                    positionCursor();
-                    setTimeout( decorate, 100 );
-                }, delay );
+
+                    formatTimeout = setTimeout( doFormat, delay );
+                }
+                else
+                {
+                    clearTimeout( formatTimeout );
+                }
             }
+            else
+            {
+                if( formatTimeout )
+                {
+                    clearTimeout( formatTimeout );
+                    formatTimeout = setTimeout( doFormat, delay );
+                }
+            }
+        }
+        else
+        {
+            clearTimeout( formatTimeout );
         }
     }
 
@@ -440,21 +465,13 @@ function activate( context )
     context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.moveCursorToPreviousField', moveCursorToPreviousField ) );
 
     vscode.window.onDidChangeTextEditorSelection( go );
+
     vscode.window.onDidChangeActiveTextEditor( function( e )
     {
-        var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' )[ getExtension() ];
-        vscode.commands.executeCommand( 'setContext', 'auto-align-enabled', enabled );
-        if( enabled )
-        {
-            updateSeparator();
-            setButton( e.document.fileName );
-            lastVersion = e.document.version - 1;
-            go();
-        }
-        else
-        {
-            setButton();
-        }
+        updateSeparator();
+        setButton( e.document.fileName );
+        lastVersion = e.document.version - 1;
+        go();
     } );
 
     updateSeparator();

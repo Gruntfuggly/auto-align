@@ -98,6 +98,11 @@
                     "type": "boolean",
                     "description": "Collapse the fields when disabling auto align",
                     "default": false
+                },
+                "autoAlign.repositionCursor": {
+                    "type": "boolean",
+                    "description": "Attempt to position the cursor somewhere sensible after formatting",
+                    "default": true
                 }
             }
         }

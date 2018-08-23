@@ -1,3 +1,8 @@
+# v0.0.15 - 2018-08-23
+- Use the correct way of accessing settings (Fixes #1)
+- Allow cursor positioning to be disabled
+- Improve handling of format timeout
+
 # v0.0.14 - 2018-04-27
 - Make sure alignment happens when enabling
 
