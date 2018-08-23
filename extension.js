@@ -464,15 +464,26 @@ function activate( context )
     context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.moveCursorToNextField', moveCursorToNextField ) );
     context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.moveCursorToPreviousField', moveCursorToPreviousField ) );
 
-    vscode.window.onDidChangeTextEditorSelection( go );
-
-    vscode.window.onDidChangeActiveTextEditor( function( e )
+    context.subscriptions.push( vscode.window.onDidChangeTextEditorSelection( go ) );
+    context.subscriptions.push( vscode.workspace.onDidChangeConfiguration( function( e )
     {
-        updateSeparator();
-        setButton( e.document.fileName );
-        lastVersion = e.document.version - 1;
-        go();
-    } );
+        if( e.affectsConfiguration( 'autoAlign' ) )
+        {
+            lastVersion = undefined;
+            go();
+        }
+    } ) );
+
+    context.subscriptions.push( vscode.window.onDidChangeActiveTextEditor( function( e )
+    {
+        if( e && e.document )
+        {
+            updateSeparator();
+            setButton( e.document.fileName );
+            lastVersion = e.document.version - 1;
+            go();
+        }
+    } ) );
 
     updateSeparator();
 

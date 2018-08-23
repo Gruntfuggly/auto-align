@@ -2,6 +2,7 @@
 - Use the correct way of accessing settings (Fixes #1)
 - Allow cursor positioning to be disabled
 - Improve handling of format timeout
+- Trigger format (if required) on configuration change
 
 # v0.0.14 - 2018-04-27
 - Make sure alignment happens when enabling

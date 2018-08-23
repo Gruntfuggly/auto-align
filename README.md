@@ -59,6 +59,10 @@ If set to true, the fields will all be collapsed (spaces trimmed) when auto alig
 
 By default, an extra space is inserted after the separator to aid readability. If you don't want this, set this flag to false.
 
+`autoAlign.repositionCursor`
+
+Normally, after formatting, an attempt is made to reposition the cursor somewhere sensible. If this gets annoying, you can disable this by setting this to false.
+
 ## Credits
 
 I shamelessly stole the alignment code from [dakara](https://marketplace.visualstudio.com/search?term=publisher%3A%22dakara%22&target=VSCode&category=All%20categories&sortBy=Relevance)'s [Transformer](https://marketplace.visualstudio.com/items?itemName=dakara.transformer) extension.
