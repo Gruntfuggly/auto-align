@@ -56,11 +56,11 @@ function activate( context )
         }
     }
 
-    function appendDelimeter( lines, delimeter )
+    function appendDelimiter( lines, delimiter )
     {
         for( var linePartIndex = 0; linePartIndex < lines.length; linePartIndex++ )
         {
-            lines[ linePartIndex ] = lines[ linePartIndex ] + delimeter;
+            lines[ linePartIndex ] = lines[ linePartIndex ] + delimiter;
         }
     }
 
@@ -178,7 +178,7 @@ function activate( context )
             var max = columnIndex < linePartCount - 1 ? columnWidths[ columnIndex ] : ( expand ? 0 : -1 );
             if( columnIndex > 0 )
             {
-                appendDelimeter( newLineTexts, separator );
+                appendDelimiter( newLineTexts, separator );
             }
             appendColumn( newLineTexts, linesParts, max );
         }
