@@ -31,7 +31,7 @@ function activate( context )
 
     function associatedFileSeparator()
     {
-        var associations = vscode.workspace.getConfiguration( 'autoAlign' ).associations;
+        var associations = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'associations' );
         return associations ? associations[ getExtension() ] : undefined;
     }
 
@@ -142,7 +142,7 @@ function activate( context )
         var linesParts = lines.map( line => line.text.split( separator ) );
         if( expand === true )
         {
-            var extraSpace = vscode.workspace.getConfiguration( 'autoAlign' ).extraSpace === true ? " " : "";
+            var extraSpace = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'extraSpace' ) === true ? " " : "";
             linesParts = linesParts.map( function( line )
             {
                 return line.map( function( part, index )
@@ -197,11 +197,11 @@ function activate( context )
 
         var highlights = [];
 
-        if( vscode.workspace.getConfiguration( 'autoAlign' ).dimSeparators === true )
+        if( vscode.workspace.getConfiguration( 'autoAlign' ).get( 'dimSeparators' ) === true )
         {
             var separator = associatedFileSeparator();
 
-            if( vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] )
+            if( vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' )[ getExtension() ] )
             {
                 var text = editor.document.getText();
 
@@ -273,9 +273,9 @@ function activate( context )
         {
             lastVersion = version;
             clearTimeout( formatTimeout );
-            if( vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] )
+            if( vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' )[ getExtension() ] )
             {
-                var delay = vscode.workspace.getConfiguration( 'autoAlign' ).delay;
+                var delay = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'delay' );
                 if( e && ( e.kind && e.kind == vscode.TextEditorSelectionChangeKind.Mouse ) )
                 {
                     delay = 0;
@@ -285,7 +285,7 @@ function activate( context )
                 {
                     if( !e || e.kind === undefined || e.kind == vscode.TextEditorSelectionChangeKind.Keyboard )
                     {
-                        align( vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] === true );
+                        align( vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' )[ getExtension() ] === true );
                     }
                     positionCursor();
                     setTimeout( decorate, 100 );
@@ -296,7 +296,7 @@ function activate( context )
 
     function setButton( filename )
     {
-        var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] === true;
+        var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' )[ getExtension() ] === true;
 
         button.text = "Auto Align: $(thumbs" + ( enabled ? "up" : "down" ) + ")";
         button.command = 'auto-align.' + ( enabled ? 'disable' : 'enable' );
@@ -337,7 +337,7 @@ function activate( context )
                 setButton();
                 setTimeout( decorate, 100 );
 
-                if( vscode.workspace.getConfiguration( 'autoAlign' ).collapseOnDisable === true )
+                if( vscode.workspace.getConfiguration( 'autoAlign' ).get( 'collapseOnDisable' ) === true )
                 {
                     align( false );
                 }
@@ -355,7 +355,7 @@ function activate( context )
             {
                 if( newSeparator )
                 {
-                    var associations = vscode.workspace.getConfiguration( 'autoAlign' ).associations;
+                    var associations = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'associations' );
                     var updated = function()
                     {
                         separator = newSeparator;
@@ -382,7 +382,7 @@ function activate( context )
             var nextSeparator = text.substr( cursorPos ).indexOf( associatedFileSeparator() );
             if( nextSeparator > -1 )
             {
-                nextSeparator += ( vscode.workspace.getConfiguration( 'autoAlign' ).extraSpace === true ? 2 : 1 );
+                nextSeparator += ( vscode.workspace.getConfiguration( 'autoAlign' ).get( 'extraSpace' ) === true ? 2 : 1 );
             }
             var nextLine = text.substr( cursorPos ).indexOf( '\n' );
             if( nextLine > -1 )
@@ -408,14 +408,14 @@ function activate( context )
         {
             var text = editor.document.getText();
             var cursorPos = editor.document.offsetAt( editor.selection.start ) - 1;
-            if( vscode.workspace.getConfiguration( 'autoAlign' ).extraSpace === true )
+            if( vscode.workspace.getConfiguration( 'autoAlign' ).get( 'extraSpace' ) === true )
             {
                 cursorPos -= 1;
             }
             var previousSeparator = text.substr( 0, cursorPos ).lastIndexOf( associatedFileSeparator() );
             if( previousSeparator > -1 )
             {
-                previousSeparator += ( vscode.workspace.getConfiguration( 'autoAlign' ).extraSpace === true ? 2 : 1 );
+                previousSeparator += ( vscode.workspace.getConfiguration( 'autoAlign' ).get( 'extraSpace' ) === true ? 2 : 1 );
             }
             var previousLine = text.substr( 0, cursorPos ).lastIndexOf( '\n' );
             if( previousLine > -1 )
@@ -442,7 +442,7 @@ function activate( context )
     vscode.window.onDidChangeTextEditorSelection( go );
     vscode.window.onDidChangeActiveTextEditor( function( e )
     {
-        var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ];
+        var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' )[ getExtension() ];
         vscode.commands.executeCommand( 'setContext', 'auto-align-enabled', enabled );
         if( enabled )
         {
@@ -463,7 +463,7 @@ function activate( context )
 
     if( editor && editor.document )
     {
-        vscode.commands.executeCommand( 'setContext', 'auto-align-enabled', vscode.workspace.getConfiguration( 'autoAlign' ).enabled[ getExtension() ] );
+        vscode.commands.executeCommand( 'setContext', 'auto-align-enabled', vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' )[ getExtension() ] );
         setButton( editor.document.fileName );
         go( {} );
     }
