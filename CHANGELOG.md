@@ -1,3 +1,6 @@
+# v0.0.16 - 2018-09-27
+- Inhibit missing document error in the console
+
 # v0.0.15 - 2018-08-23
 - Use the correct way of accessing settings (Fixes #1)
 - Allow cursor positioning to be disabled

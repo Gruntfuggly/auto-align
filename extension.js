@@ -278,44 +278,47 @@ function activate( context )
         };
 
         var editor = vscode.window.activeTextEditor;
-        var version = editor.document.version;
-
-        var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' )[ getExtension() ];
-        vscode.commands.executeCommand( 'setContext', 'auto-align-enabled', enabled );
-
-        if( enabled )
+        if( editor && editor.document )
         {
-            if( !lastVersion || version > lastVersion )
-            {
-                lastVersion = version;
-                clearTimeout( formatTimeout );
-                if( vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' )[ getExtension() ] )
-                {
-                    var delay = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'delay' );
-                    if( e && ( e.kind && e.kind == vscode.TextEditorSelectionChangeKind.Mouse ) )
-                    {
-                        delay = 0;
-                    }
+            var version = editor.document.version;
 
-                    formatTimeout = setTimeout( doFormat, delay );
+            var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' )[ getExtension() ];
+            vscode.commands.executeCommand( 'setContext', 'auto-align-enabled', enabled );
+
+            if( enabled )
+            {
+                if( !lastVersion || version > lastVersion )
+                {
+                    lastVersion = version;
+                    clearTimeout( formatTimeout );
+                    if( vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' )[ getExtension() ] )
+                    {
+                        var delay = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'delay' );
+                        if( e && ( e.kind && e.kind == vscode.TextEditorSelectionChangeKind.Mouse ) )
+                        {
+                            delay = 0;
+                        }
+
+                        formatTimeout = setTimeout( doFormat, delay );
+                    }
+                    else
+                    {
+                        clearTimeout( formatTimeout );
+                    }
                 }
                 else
                 {
-                    clearTimeout( formatTimeout );
+                    if( formatTimeout )
+                    {
+                        clearTimeout( formatTimeout );
+                        formatTimeout = setTimeout( doFormat, delay );
+                    }
                 }
             }
             else
             {
-                if( formatTimeout )
-                {
-                    clearTimeout( formatTimeout );
-                    formatTimeout = setTimeout( doFormat, delay );
-                }
+                clearTimeout( formatTimeout );
             }
-        }
-        else
-        {
-            clearTimeout( formatTimeout );
         }
     }
 

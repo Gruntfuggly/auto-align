@@ -3,7 +3,7 @@
     "displayName": "Auto Align",
     "description": "Automatically align by commas, vertical bars, etc.",
     "icon": "icon.png",
-    "version": "0.0.15",
+    "version": "0.0.16",
     "publisher": "Gruntfuggly",
     "repository": "https://github.com/Gruntfuggly/auto-align",
     "engines": {
@@ -61,7 +61,7 @@
         ],
         "configuration": {
             "type": "object",
-            "title": "auto-align configuration",
+            "title": "Auto Align",
             "properties": {
                 "autoAlign.enabled": {
                     "type": "object",
