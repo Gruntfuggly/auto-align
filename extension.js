@@ -49,7 +49,9 @@ function activate( context )
     {
         for( var linePartIndex = 0; linePartIndex < linesParts.length; linePartIndex++ )
         {
-            var part = padRight( linesParts[ linePartIndex ].shift(), max );
+            var alignment = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'alignment' );
+
+            var part = alignment === "left" ? padRight( linesParts[ linePartIndex ].shift(), max ) : padLeft( linesParts[ linePartIndex ].shift(), max );
 
             if( lines[ linePartIndex ] === undefined ) lines[ linePartIndex ] = '';
             lines[ linePartIndex ] += part;
@@ -70,6 +72,20 @@ function activate( context )
         {
             var padAmount = text ? ( count - text.length ) : count;
             return ( text ? text : "" ) + ' '.repeat( padAmount );
+        }
+        else if( count < 0 )
+        {
+            return text ? text.trim() : "";
+        }
+        return text ? text : "";
+    }
+
+    function padLeft( text, count )
+    {
+        if( count > 0 )
+        {
+            var padAmount = text ? ( count - text.length ) : count;
+            return ' '.repeat( padAmount ) + ( text ? text : "" );
         }
         else if( count < 0 )
         {

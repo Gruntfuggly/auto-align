@@ -3,7 +3,7 @@
     "displayName": "Auto Align",
     "description": "Automatically align by commas, vertical bars, etc.",
     "icon": "icon.png",
-    "version": "0.0.16",
+    "version": "0.0.17",
     "publisher": "Gruntfuggly",
     "repository": "https://github.com/Gruntfuggly/auto-align",
     "engines": {
@@ -103,11 +103,25 @@
                     "type": "boolean",
                     "description": "Attempt to position the cursor somewhere sensible after formatting",
                     "default": true
+                },
+                "autoAlign.alignment": {
+                    "type": "string",
+                    "enum": [
+                        "left",
+                        "right"
+                    ],
+                    "default": "left",
+                    "description": "Which what to align the columns"
                 }
             }
         }
     },
     "devDependencies": {
         "vscode": "^1.0.0"
+    },
+    "__metadata": {
+        "id": "01e0d012-2dda-490b-a68f-533f06736a1a",
+        "publisherDisplayName": "Gruntfuggly",
+        "publisherId": "d4906d2e-f2ee-492d-9c7c-02b6160599ec"
     }
 }

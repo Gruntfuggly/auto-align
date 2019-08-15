@@ -1,3 +1,6 @@
+# v0.0.17 - 2019-08-15
+- Add option for aligning to the left
+
 # v0.0.16 - 2018-09-27
 - Inhibit missing document error in the console
 
