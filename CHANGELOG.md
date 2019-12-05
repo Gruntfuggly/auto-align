@@ -1,3 +1,5 @@
+- Add option to append a trailing separator
+
 # v0.0.17 - 2019-08-15
 - Add option for aligning to the left
 

@@ -191,12 +191,18 @@ function activate( context )
         }
         for( var columnIndex = 0; columnIndex < linePartCount; columnIndex++ )
         {
-            var max = columnIndex < linePartCount - 1 ? columnWidths[ columnIndex ] : ( expand ? 0 : -1 );
+            var addEndingSeparator = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'endingSeparator', false );
+            var lastColumn = addEndingSeparator === true ? linePartCount : linePartCount - 1;
+            var max = columnIndex < lastColumn ? columnWidths[ columnIndex ] : ( expand ? 0 : -1 );
             if( columnIndex > 0 )
             {
                 appendDelimiter( newLineTexts, separator );
             }
             appendColumn( newLineTexts, linesParts, max );
+            if( ( columnIndex === linePartCount - 1 ) && addEndingSeparator === true )
+            {
+                appendDelimiter( newLineTexts, separator );
+            }
         }
 
         replaceLinesWithText( textEditor, lines, newLineTexts );
@@ -245,6 +251,7 @@ function activate( context )
             var text = editor.document.getText();
 
             var selections = [];
+            console.log( "selections:" + selections.length );
             selections.push( new vscode.Range( editor.document.positionAt( 0 ), editor.document.positionAt( text.length - 1 ) ) );
             alignCSV( editor, selections, expand );
         }

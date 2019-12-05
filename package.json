@@ -94,6 +94,11 @@
                     "description": "Set to true to dim the separators when active",
                     "default": true
                 },
+                "autoAlign.endingSeparator": {
+                    "type": "boolean",
+                    "description": "Set to true to include an extra separator at the end of each line.",
+                    "default": false
+                },
                 "autoAlign.collapseOnDisable": {
                     "type": "boolean",
                     "description": "Collapse the fields when disabling auto align",
