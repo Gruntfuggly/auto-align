@@ -1,3 +1,4 @@
+# v0.0.18 - 2019-12-05
 - Add option to append a trailing separator
 
 # v0.0.17 - 2019-08-15
