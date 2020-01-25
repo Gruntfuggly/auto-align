@@ -6,6 +6,12 @@ var innerField;
 
 var lastVersion;
 
+function getSplitRegex( separator )
+{
+    // https://stackoverflow.com/questions/23582276/split-string-by-comma-but-ignore-commas-inside-quotes
+    return new RegExp( '\\' + separator + '(?=(?:(?:[^"]*"){2})*[^"]*$)', 'g' );
+}
+
 function activate( context )
 {
     var button = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Left, 0 );
@@ -155,7 +161,9 @@ function activate( context )
             lines.push( document.lineAt( index ) );
         }
 
-        var linesParts = lines.map( line => line.text.split( separator ) );
+        var splitRegex = getSplitRegex( separator );
+        // var splitRegex = new RegExp( '(?<=")[^"]+?(?="(?:\s*?,|\s*?$))|(?<=(?:^|,)\s*?)(?:[^,"\s][^,"]*[^,"\s])|(?:[^,"\s])(?![^"]*?"(?:\s*?,|\s*?$))(?=\s*?(?:,|$))');
+        var linesParts = lines.map( line => line.text.split( splitRegex ) );
         if( expand === true )
         {
             var extraSpace = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'extraSpace' ) === true ? " " : "";
@@ -226,8 +234,8 @@ function activate( context )
             if( vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' )[ getExtension() ] )
             {
                 var text = editor.document.getText();
+                var pattern = getSplitRegex( separator );
 
-                var pattern = new RegExp( "\\" + separator, 'g' );
                 var match;
                 while( match = pattern.exec( text ) )
                 {

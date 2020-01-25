@@ -72,3 +72,5 @@ Normally, after formatting, an attempt is made to reposition the cursor somewher
 I shamelessly stole the alignment code from [dakara](https://marketplace.visualstudio.com/search?term=publisher%3A%22dakara%22&target=VSCode&category=All%20categories&sortBy=Relevance)'s [Transformer](https://marketplace.visualstudio.com/items?itemName=dakara.transformer) extension.
 
 Icon from [deleket](http://www.softicons.com/designers/deleket)
+
+Regex for matching separators unless quoted by Stack Overflow user [hwnd](https://stackoverflow.com/users/2206004/hwnd).

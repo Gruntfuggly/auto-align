@@ -1,3 +1,5 @@
+- Support quoted seperators
+
 # v0.0.18 - 2019-12-05
 - Add option to append a trailing separator
 
