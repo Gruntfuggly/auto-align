@@ -1,3 +1,4 @@
+# v0.0.19 - 2020-01-25
 - Support quoted seperators
 
 # v0.0.18 - 2019-12-05
