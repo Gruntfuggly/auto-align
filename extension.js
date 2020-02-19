@@ -142,7 +142,7 @@ function activate( context )
         );
     }
 
-    function alignCSV( textEditor, ranges, expand )
+    function alignCSV( textEditor, selection, expand )
     {
         if( expand === undefined )
         {
@@ -154,6 +154,16 @@ function activate( context )
         var text = document.getText();
         var firstLine = document.positionAt( text.indexOf( separator ) );
         var lastLine = document.positionAt( text.lastIndexOf( separator ) );
+
+        if( selection )
+        {
+            firstLine = selection.start;
+            lastLine = selection.end;
+            if( selection.end.character === 0 )
+            {
+                lastLine = new vscode.Position( lastLine.line - 1 );
+            }
+        }
 
         var lines = [];
         for( var index = firstLine.line; index <= lastLine.line; index++ )
@@ -213,7 +223,7 @@ function activate( context )
             }
         }
 
-        replaceLinesWithText( textEditor, lines, newLineTexts );
+        return { oldLines: lines, newLines: newLineTexts };
     }
 
     var decorationType = vscode.window.createTextEditorDecorationType( {
@@ -250,18 +260,30 @@ function activate( context )
         editor.setDecorations( decorationType, highlights );
     }
 
-    function align( expand )
+    function align( expand, selections )
     {
         var editor = vscode.window.activeTextEditor;
 
         if( editor )
         {
-            var text = editor.document.getText();
-
-            var selections = [];
-            console.log( "selections:" + selections.length );
-            selections.push( new vscode.Range( editor.document.positionAt( 0 ), editor.document.positionAt( text.length - 1 ) ) );
-            alignCSV( editor, selections, expand );
+            var aligned;
+            if( selections )
+            {
+                var oldLines = [];
+                var newLines = [];
+                editor.selections.map( function( selection )
+                {
+                    aligned = alignCSV( editor, selection, expand );
+                    oldLines.push.apply( oldLines, aligned.oldLines );
+                    newLines.push.apply( newLines, aligned.newLines );
+                } );
+                replaceLinesWithText( editor, oldLines, newLines );
+            }
+            else
+            {
+                aligned = alignCSV( editor, undefined, expand );
+                replaceLinesWithText( editor, aligned.oldLines, aligned.newLines );
+            }
         }
     }
 
@@ -497,6 +519,16 @@ function activate( context )
     context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.disable', disable ) );
     context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.moveCursorToNextField', moveCursorToNextField ) );
     context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.moveCursorToPreviousField', moveCursorToPreviousField ) );
+
+    context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.alignSelection', function()
+    {
+        var editor = vscode.window.activeTextEditor;
+
+        if( editor && editor.document )
+        {
+            align( true, editor.selections );
+        }
+    } ) );
 
     context.subscriptions.push( vscode.window.onDidChangeTextEditorSelection( go ) );
     context.subscriptions.push( vscode.workspace.onDidChangeConfiguration( function( e )

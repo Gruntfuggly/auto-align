@@ -45,6 +45,10 @@
             {
                 "command": "auto-align.moveCursorToPreviousField",
                 "title": "Auto Align: Move Cursor to Previous Field"
+            },
+            {
+                "command": "auto-align.alignSelection",
+                "title": "Auto Align: Align selection"
             }
         ],
         "keybindings": [

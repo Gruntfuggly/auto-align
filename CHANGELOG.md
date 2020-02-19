@@ -1,3 +1,5 @@
+- Add manual align section function
+
 # v0.0.19 - 2020-01-25
 - Support quoted seperators
 
