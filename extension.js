@@ -396,15 +396,7 @@ function activate( context )
         vscode.commands.executeCommand( 'setContext', 'auto-align-enabled', true );
         var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' );
         enabled[ getExtension() ] = true;
-        vscode.workspace.getConfiguration( 'autoAlign' ).update( 'enabled', enabled, true ).then(
-            function()
-            {
-                lastVersion = undefined;
-                setButton();
-                go();
-            }
-        );
-
+        vscode.workspace.getConfiguration( 'autoAlign' ).update( 'enabled', enabled, true );
     }
 
     function disable()
@@ -412,18 +404,7 @@ function activate( context )
         vscode.commands.executeCommand( 'setContext', 'auto-align-enabled', false );
         var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' );
         enabled[ getExtension() ] = false;
-        vscode.workspace.getConfiguration( 'autoAlign' ).update( 'enabled', enabled, true ).then(
-            function()
-            {
-                setButton();
-                setTimeout( decorate, 100 );
-
-                if( vscode.workspace.getConfiguration( 'autoAlign' ).get( 'collapseOnDisable' ) === true )
-                {
-                    align( false );
-                }
-            }
-        );
+        vscode.workspace.getConfiguration( 'autoAlign' ).update( 'enabled', enabled, true );
     }
 
     function changeSeparator()
@@ -535,8 +516,29 @@ function activate( context )
     {
         if( e.affectsConfiguration( 'autoAlign' ) )
         {
-            lastVersion = undefined;
-            go();
+            if( e.affectsConfiguration( 'autoAlign.enabled' ) )
+            {
+                var enabled = vscode.workspace.getConfiguration( 'autoAlign' ).get( 'enabled' )[ getExtension() ];
+                setButton();
+                if( enabled )
+                {
+                    lastVersion = undefined;
+                    go();
+                }
+                else
+                {
+                    setTimeout( decorate, 100 );
+                    if( vscode.workspace.getConfiguration( 'autoAlign' ).get( 'collapseOnDisable' ) === true )
+                    {
+                        align( false );
+                    }
+                }
+            }
+            else
+            {
+                lastVersion = undefined;
+                go();
+            }
         }
     } ) );
 
