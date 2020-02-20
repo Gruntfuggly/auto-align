@@ -1,6 +1,6 @@
 # Auto Align
 
-<img src="https://raw.githubusercontent.com/Gruntfuggly/auto-align/master/auto-align.gif">
+![video](https://raw.githubusercontent.com/Gruntfuggly/auto-align/master/auto-align.gif)
 
 This is basically a poor man's spreadsheet. It auto formats a file, aligning columns by padding with spaces. It uses commas for .csv files and vertical bars for .bsv files. You can also add other separators for other file types if you want.
 
@@ -12,10 +12,10 @@ The column alignment can also be triggered manually (even when currently disable
 
 *Note: This works well with reasonably small files. With a 2000 line, 10 column file it's still usable. With 10000 lines it starts to lag a bit. I wrote this because I often feel the need to write files in a simple table format, but don't want to use Excel. **You may want to take a copy of your file first, just to be safe**.*
 
- - [ ] Highlight headings in bold (or something)
- - [ ] Add sort functionality
- - [ ] Add warning if file already contains new separator
- - [ ] Add methods to insert/remove empty columns
+- [ ] Highlight headings in bold (or something)
+- [ ] Add sort functionality
+- [ ] Add warning if file already contains new separator
+- [ ] Add methods to insert/remove empty columns
 
 ## Installing
 
@@ -69,8 +69,8 @@ Normally, after formatting, an attempt is made to reposition the cursor somewher
 
 ## Credits
 
-I shamelessly stole the alignment code from [dakara](https://marketplace.visualstudio.com/search?term=publisher%3A%22dakara%22&target=VSCode&category=All%20categories&sortBy=Relevance)'s [Transformer](https://marketplace.visualstudio.com/items?itemName=dakara.transformer) extension.
+I shamelessly stole the alignment code from [dakara](https://marketplace.visualstudio.com/publishers/dakara)'s [Transformer](https://marketplace.visualstudio.com/items?itemName=dakara.transformer) extension.
 
-Icon from [deleket](http://www.softicons.com/designers/deleket)
+Icon from [deleket](http://www.softicons.com/designers/deleket).
 
 Regex for matching separators unless quoted by Stack Overflow user [hwnd](https://stackoverflow.com/users/2206004/hwnd).
