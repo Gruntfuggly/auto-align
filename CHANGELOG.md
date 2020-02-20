@@ -1,5 +1,7 @@
 # Auto Align Change Log
 
+## v0.0.20 - 2020-02-20
+
 - Add manual align section function
 - Fix enable/disable button on status bar
 - Fix markdown lint errors in CHANGEME.md and README.md
