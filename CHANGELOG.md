@@ -1,5 +1,7 @@
 # Auto Align Change Log
 
+## v0.0.21 - 2020-02-21
+
 - Add align selection with separator feature
 
 ## v0.0.20 - 2020-02-20
