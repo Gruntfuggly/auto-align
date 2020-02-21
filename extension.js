@@ -142,14 +142,14 @@ function activate( context )
         );
     }
 
-    function alignCSV( textEditor, selection, expand )
+    function alignCSV( textEditor, selection, expand, overriddenSeparator )
     {
         if( expand === undefined )
         {
             expand = true;
         }
 
-        var separator = associatedFileSeparator();
+        var separator = overriddenSeparator ? overriddenSeparator : associatedFileSeparator();
         var document = textEditor.document;
         var text = document.getText();
         var firstLine = document.positionAt( text.indexOf( separator ) );
@@ -260,7 +260,7 @@ function activate( context )
         editor.setDecorations( decorationType, highlights );
     }
 
-    function align( expand, selections )
+    function align( expand, selections, overriddenSeparator )
     {
         var editor = vscode.window.activeTextEditor;
 
@@ -273,7 +273,7 @@ function activate( context )
                 var newLines = [];
                 editor.selections.map( function( selection )
                 {
-                    aligned = alignCSV( editor, selection, expand );
+                    aligned = alignCSV( editor, selection, expand, overriddenSeparator );
                     oldLines.push.apply( oldLines, aligned.oldLines );
                     newLines.push.apply( newLines, aligned.newLines );
                 } );
@@ -508,6 +508,29 @@ function activate( context )
         if( editor && editor.document )
         {
             align( true, editor.selections );
+        }
+    } ) );
+
+    context.subscriptions.push( vscode.commands.registerCommand( 'auto-align.alignSelectionWithSeparator', function()
+    {
+        var editor = vscode.window.activeTextEditor;
+
+        if( editor && editor.document )
+        {
+            var prompt = "Enter the required separator";
+            var defaultSeparator = associatedFileSeparator();
+            if( defaultSeparator )
+            {
+                prompt += "(default: \"" + defaultSeparator + "\")";
+            }
+            vscode.window.showInputBox( { prompt: prompt } ).then(
+                function( separator )
+                {
+                    if( separator !== undefined )
+                    {
+                        align( true, editor.selections, separator );
+                    }
+                } );
         }
     } ) );
 

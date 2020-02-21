@@ -8,7 +8,7 @@ It will find the first and last lines in the file containing the separator and f
 
 When active, the tab key will move to the next field and shift+tab will move to the previous field.
 
-The column alignment can also be triggered manually (even when currently disabled) by using the command `Auto Align: Align Columns`. Likewise, collapsing can be triggered using `Auto Align: Collapse Columns`.
+Alignment can also be triggered manually using `Auto Align: Align Columns`, `Auto Align: Align Selection` or `Auto Align: Align Selection With Separator`.
 
 *Note: This works well with reasonably small files. With a 2000 line, 10 column file it's still usable. With 10000 lines it starts to lag a bit. I wrote this because I often feel the need to write files in a simple table format, but don't want to use Excel. **You may want to take a copy of your file first, just to be safe**.*
 
